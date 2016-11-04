@@ -222,10 +222,6 @@ public class HelloSpreadsheetView extends Application {
         return buildCommonControlGrid();
     }
 
-    //@Override
-    public String getJavaDocURL() {
-        return Utils.JAVADOC_BASE + "org/controlsfx/control/spreadsheet/SpreadsheetView.html";
-    }
 
     /**
      * Add some pickers into the SpreadsheetView in order to give some
