@@ -37,3 +37,12 @@
 .right-panel > .control-panel {
     -fx-padding: 5 0 0 0;
 }
+
+/** NOT EDITABLE FIELD BG COLOUR **/
+.disabled {
+    -fx-background-color: #CDD2D4;
+}
+
+.label {
+    -fx-effect: dropshadow(two-pass-box , darkgray, 10, 0.0 , 4, 5);
+}
