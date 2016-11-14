@@ -1,13 +1,10 @@
 package ca.riveros.ib;
 
-import ca.riveros.ib.handlers.AccountInfoHandler;
-import ca.riveros.ib.handlers.ConnectionHandler;
-import ca.riveros.ib.handlers.Logger;
+import ca.riveros.ib.handlers.*;
 import ca.riveros.ib.model.SpreadsheetModel;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.stage.Stage;
-import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import java.util.List;
 
@@ -20,7 +17,10 @@ public class Mediator extends Application {
     private ConnectionHandler connectionHandler;
     private Logger inLogger;
     private Logger outLogger;
+    private Logger messageLogger;
     private AccountInfoHandler accountInfoHandler;
+    private MktDataHandler mktDataHandler;
+    private ContractDetailsHandler contractDetailsHandler;
 
     public Mediator() {
         mainWindow = new TwsIbSpreadSheetView(this);
@@ -33,9 +33,10 @@ public class Mediator extends Application {
         mainWindow.start(primaryStage);
 
         //Create TWS Connection
-        inLogger = new Logger();
-        outLogger = new Logger();
-        connectionHandler = new ConnectionHandler(this, inLogger, outLogger);
+        inLogger = new Logger(mainWindow.inLoggerText);
+        outLogger = new Logger(mainWindow.outLoggerText);
+        messageLogger = new Logger(mainWindow.messagesLoggerText);
+        connectionHandler = new ConnectionHandler(this, inLogger, outLogger, messageLogger);
     }
 
     /**
@@ -51,8 +52,12 @@ public class Mediator extends Application {
      * @param account the TWS Account Code
      */
     public void requestAccountUpdate(String account) {
-        outLogger.log("Requesting account Updates for " + account);
-        accountInfoHandler = new AccountInfoHandler(this, inLogger);
+        if(accountInfoHandler != null) {
+            outLogger.log("Cancelling subscription for account " + accountInfoHandler.getAccount());
+            connectionHandler.getApiController().reqAccountUpdates(false, accountInfoHandler.getAccount(), accountInfoHandler);
+        }
+        mktDataHandler = new MktDataHandler(this, inLogger);
+        accountInfoHandler = new AccountInfoHandler(this, mktDataHandler, account, inLogger);
         connectionHandler.getApiController().reqAccountUpdates(true, account, accountInfoHandler);
     }
 
@@ -71,6 +76,11 @@ public class Mediator extends Application {
     public void updateAccountNetLiq(String value) {
         mainWindow.accountNetLiqTextField.setText(value);
     }
+
+    public ConnectionHandler getConnectionHandler() {
+        return connectionHandler;
+    }
+
 
     public static void main(String ...args) {
         launch(args);

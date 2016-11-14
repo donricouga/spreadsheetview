@@ -28,6 +28,7 @@ package ca.riveros.ib;
 
 import ca.riveros.ib.handlers.ConnectionHandler;
 import ca.riveros.ib.model.SpreadsheetModel;
+import ca.riveros.ib.ui.BorderSlideBar;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,7 +40,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -75,11 +78,19 @@ public class TwsIbSpreadSheetView extends Application {
     //Combo Box to Allow user to select to filter by accounts
     ComboBox<String> accountComboBox = new ComboBox<>();
 
+    //Button to show and hide logs
+    Button logButton = new Button("Show Logs");
+
     //Top of BorderPane TextFields
     TextField totalNetLiqTextField = new TextField("0.0");
     TextField accountNetLiqTextField = new TextField("0.0");
     TextField totalInitMarginTextField = new TextField("0.0");
     TextField perCapitalToTradeTextField = new TextField("00.00");
+
+    //Logger tabs
+    TextArea inLoggerText = new TextArea("");
+    TextArea outLoggerText = new TextArea("");
+    TextArea messagesLoggerText = new TextArea("");
 
     public TwsIbSpreadSheetView(Mediator mediator) {
         this.mediator = mediator;
@@ -146,6 +157,9 @@ public class TwsIbSpreadSheetView extends Application {
 
 
         borderPane.setTop(createTopOfBorderPane());
+        //BorderSlideBar logSlideBar = new BorderSlideBar(100, logButton, Pos.BOTTOM_LEFT, new Label("Ricardo"));
+        //logSlideBar.getChildren().add(createLogViewTabs());
+        borderPane.setBottom(createLogViewTabs());
         return borderPane;
     }
 
@@ -188,7 +202,28 @@ public class TwsIbSpreadSheetView extends Application {
         gridPane.add(totalInitMarginTextField, 7, 0, 1, 1);
         gridPane.add(perCapToTradeLabel, 8, 0, 1, 1);
         gridPane.add(perCapitalToTradeTextField, 9, 0, GridPane.REMAINING, 1);
+
         return gridPane;
+    }
+
+    private TabPane createLogViewTabs() {
+        TabPane tabPane = new TabPane();
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+
+        Tab inTab = new Tab();
+        inTab.setText("Received from TWS");
+        inTab.setContent(inLoggerText);
+
+        Tab outTab = new Tab();
+        outTab.setText("Sent to TWS");
+        outTab.setContent(outLoggerText);
+
+        Tab messagesTab = new Tab();
+        messagesTab.setText("Messages");
+        messagesTab.setContent(messagesLoggerText);
+
+        tabPane.getTabs().addAll(inTab,outTab, messagesTab);
+        return tabPane;
     }
 
 
@@ -215,7 +250,7 @@ public class TwsIbSpreadSheetView extends Application {
         Grid g = spreadSheetView.getGrid();
 
         //Create a Collection<ObservableList<SpreadsheetCell>>
-        ObservableList<ObservableList<SpreadsheetCell>> spreadsheeModelObservableList = FXCollections.observableArrayList();
+        ObservableList<ObservableList<SpreadsheetCell>> spreadsheetModelObservableList = FXCollections.observableArrayList();
 
         //Map SpreadsheetModel to Grid Observable List
         AtomicInteger counter = new AtomicInteger(0);
@@ -250,14 +285,14 @@ public class TwsIbSpreadSheetView extends Application {
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),26,1,1,sm.getKcQty()));
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),27,1,1,sm.getKcQty()));
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),28,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),29,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),30,1,1,sm.getKcQty()));
+            rowsList.add(SpreadsheetCellType.INTEGER.createCell(counter.intValue(),29,1,1,sm.getContractId()));
+            rowsList.add(SpreadsheetCellType.STRING.createCell(counter.intValue(),30,1,1,sm.getSymbol()));
             counter.incrementAndGet();
-            spreadsheeModelObservableList.add(rowsList);
+            spreadsheetModelObservableList.add(rowsList);
         });
 
         //set grid and display
-        g.setRows(spreadsheeModelObservableList);
+        g.setRows(spreadsheetModelObservableList);
         spreadSheetView.setGrid(g);
     }
 }

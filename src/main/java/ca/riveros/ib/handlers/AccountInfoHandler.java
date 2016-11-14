@@ -21,14 +21,20 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
     //Mediator
     private Mediator mediator;
 
-    //Logger
+    //Handlers
+    private MktDataHandler mktDataHandler;
     private Logger inLogger;
+
+    //Reference Data
+    private String account;
 
     private List <SpreadsheetModel>positionsList = new ArrayList<>(30);
 
-    public AccountInfoHandler(Mediator mediator, Logger inLogger) {
+    public AccountInfoHandler(Mediator mediator, MktDataHandler mktDataHandler, String account, Logger inLogger) {
         this.inLogger = inLogger;
+        this.mktDataHandler = mktDataHandler;
         this.mediator = mediator;
+        this.account = account;
     }
 
     @Override
@@ -48,18 +54,30 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
     public void accountDownloadEnd(String account) {
         inLogger.log("Finished with account " + account);
         mediator.updateSpreadsheetViewGrid(positionsList);
+
+        //Call Contract Detail Handler
+        positionsList.forEach(s -> {
+            Contract contract = s.getTwsContract();
+
+            //Set Exchange to empty to let TWS decide what exchange to use.
+            contract.exchange("");
+            mediator.getConnectionHandler().getApiController().reqContractDetails(
+                    contract, new ContractDetailsHandler(this.mediator, this.mktDataHandler, this.inLogger));
+        });
     }
 
     @Override
     public void updatePortfolio(Position position) {
+        inLogger.log("Received position " + position.account());
         SpreadsheetModel model = createSpreadsheetModel(position);
+        model.setTwsContract(position.contract());
         positionsList.add(model);
     }
 
     private SpreadsheetModel createSpreadsheetModel(Position pos) {
         SpreadsheetModel model = new SpreadsheetModel();
         model.setContract(generateContractName(pos.contract()));
-        model.setContractId(pos.conid());
+        model.setContractId(pos.contract().conid());
         model.setEntry$(calculateAvgCost(pos.contract(),pos.averageCost()));
         model.setMarket$(pos.marketPrice());
         model.setNotional(pos.marketValue());
@@ -115,5 +133,9 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
         if("OPT".equals(con.secType().getApiString()))
             return averageCost / 100;
         return averageCost;
+    }
+
+    public String getAccount() {
+        return account;
     }
 }

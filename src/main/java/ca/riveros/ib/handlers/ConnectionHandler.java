@@ -17,10 +17,12 @@ public class ConnectionHandler implements ApiController.IConnectionHandler {
 
     //Logging
     private Logger inLogger;
+    private Logger messageLogger;
 
-    public ConnectionHandler(Mediator mediator, Logger inLogger, Logger outLogger) {
+    public ConnectionHandler(Mediator mediator, Logger inLogger, Logger outLogger, Logger messageLogger) {
         this.mediator = mediator;
         this.inLogger = inLogger;
+        this.messageLogger = messageLogger;
         apiController = new ApiController(this, inLogger, outLogger);
         apiController.connect("127.0.0.1", 7497, 0, null);
     }
@@ -36,7 +38,7 @@ public class ConnectionHandler implements ApiController.IConnectionHandler {
 
     @Override
     public void disconnected() {
-        System.out.println(" ------- Disconnected from TWS Interactive Brokers  ------ ");
+        inLogger.log(" ------- Disconnected from TWS Interactive Brokers  ------ ");
     }
 
     @Override
@@ -52,18 +54,17 @@ public class ConnectionHandler implements ApiController.IConnectionHandler {
 
     @Override
     public void error(Exception e) {
-        inLogger.log("*** Error Received : " + e);
+        messageLogger.log("*** Error Received : " + e);
     }
 
     @Override
     public void message(int id, int errorCode, String errorMsg) {
-        inLogger.log("Received the following message from TWS Interactive Brokers : ");
-        inLogger.log("(" + id + ":" + errorCode + ") --> " + errorMsg);
+        messageLogger.log("(" + id + ":" + errorCode + ") --> " + errorMsg);
     }
 
     @Override
     public void show(String string) {
-        inLogger.log("TWS IS Showing " + string);
+        messageLogger.log(string);
     }
 
 }
