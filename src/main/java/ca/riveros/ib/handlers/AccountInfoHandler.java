@@ -23,6 +23,7 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
 
     //Handlers
     private MktDataHandler mktDataHandler;
+    private ContractDetailsHandler contractDetailsHandler;
     private Logger inLogger;
 
     //Reference Data
@@ -30,11 +31,11 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
 
     private List <SpreadsheetModel>positionsList = new ArrayList<>(30);
 
-    public AccountInfoHandler(Mediator mediator, MktDataHandler mktDataHandler, String account, Logger inLogger) {
+    public AccountInfoHandler(Mediator mediator, String account, Logger inLogger) {
         this.inLogger = inLogger;
-        this.mktDataHandler = mktDataHandler;
         this.mediator = mediator;
         this.account = account;
+        contractDetailsHandler = new ContractDetailsHandler(mediator, inLogger);
     }
 
     @Override
@@ -62,8 +63,11 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
             //Set Exchange to empty to let TWS decide what exchange to use.
             contract.exchange("");
             mediator.getConnectionHandler().getApiController().reqContractDetails(
-                    contract, new ContractDetailsHandler(this.mediator, this.mktDataHandler, this.inLogger));
+                    contract, contractDetailsHandler);
         });
+
+        //clear for next call
+        positionsList.clear();
     }
 
     @Override

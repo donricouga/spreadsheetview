@@ -34,6 +34,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -150,6 +151,9 @@ public class TwsIbSpreadSheetView extends Application {
             c.fitColumn();
         });
 
+        //freeze contract column and set first column size to 150
+        spreadSheetView.getColumns().get(0).setFixed(true);
+
         borderPane.setCenter(spreadSheetView);
 
         spreadSheetView.getStylesheets().add(Thread.currentThread()
@@ -227,25 +231,6 @@ public class TwsIbSpreadSheetView extends Application {
     }
 
 
-
-//    public void addRow() {
-//        Grid g = spreadSheetView.getGrid();
-//        int rowCount = spreadSheetView.getGrid().getRowCount();
-//        ObservableList<ObservableList<SpreadsheetCell>> list = spreadSheetView.getGrid().getRows();
-//
-//        final ObservableList<SpreadsheetCell> randomRow = FXCollections.observableArrayList();
-//
-//        SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(rowCount, 0, 1, 1, "Random " + (rowCount + 1));
-//        cell.getStyleClass().add("first-cell");
-//        randomRow.add(cell);
-//
-//        for (int column = 1; column < spreadSheetView.getGrid().getColumnCount(); column++) {
-//            randomRow.add(generateCell(rowCount, column, 1, 1));
-//        }
-//        list.add(randomRow);
-//        spreadSheetView.setGrid(g);
-//    }
-
     public void updateSpreadsheetViewGrid(List<SpreadsheetModel> list) {
         Grid g = spreadSheetView.getGrid();
 
@@ -256,7 +241,9 @@ public class TwsIbSpreadSheetView extends Application {
         AtomicInteger counter = new AtomicInteger(0);
         list.forEach(sm -> {
             ObservableList<SpreadsheetCell> rowsList = FXCollections.observableArrayList();
-            rowsList.add(SpreadsheetCellType.STRING.createCell(counter.intValue(),0,1,1,sm.getContract()));
+            SpreadsheetCell contractCell = SpreadsheetCellType.STRING.createCell(counter.intValue(),0,1,1,sm.getContract());
+            contractCell.setWrapText(true);
+            rowsList.add(contractCell);
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),1,1,1,sm.getQty()));
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),2,1,1,sm.getKcQty()));
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),3,1,1,sm.getQtyOpenClose()));
@@ -283,8 +270,8 @@ public class TwsIbSpreadSheetView extends Application {
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),24,1,1,sm.getKcQty()));
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),25,1,1,sm.getKcQty()));
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),26,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),27,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),28,1,1,sm.getKcQty()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),27,1,1,sm.getBid())); //BID
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),28,1,1,sm.getMid())); //ASK
             rowsList.add(SpreadsheetCellType.INTEGER.createCell(counter.intValue(),29,1,1,sm.getContractId()));
             rowsList.add(SpreadsheetCellType.STRING.createCell(counter.intValue(),30,1,1,sm.getSymbol()));
             counter.incrementAndGet();

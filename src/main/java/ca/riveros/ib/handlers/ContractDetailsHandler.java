@@ -1,6 +1,7 @@
 package ca.riveros.ib.handlers;
 
 import ca.riveros.ib.Mediator;
+import com.ib.client.Contract;
 import com.ib.client.ContractDetails;
 import com.ib.controller.ApiController;
 
@@ -15,15 +16,13 @@ public class ContractDetailsHandler implements ApiController.IContractDetailsHan
 
     //Handlers Refs
     private Logger inLogger;
-    private MktDataHandler mktDataHandler;
 
     //Mediator
     private Mediator mediator;
 
-    public ContractDetailsHandler(Mediator mediator, MktDataHandler mktDataHandler, Logger inLogger) {
+    public ContractDetailsHandler(Mediator mediator, Logger inLogger) {
         this.inLogger = inLogger;
         this.mediator = mediator;
-        this.mktDataHandler = mktDataHandler;
     }
 
     @Override
@@ -31,7 +30,10 @@ public class ContractDetailsHandler implements ApiController.IContractDetailsHan
         //in here request market data
         inLogger.log("Received the following Contract Details ...");
         inLogger.log(list.toString());
-        if(hasElements.test(list))
-            mediator.getConnectionHandler().getApiController().reqOptionMktData(list.get(0).contract(),"",true, mktDataHandler);
+        if(hasElements.test(list)) {
+            Contract contract = list.get(0).contract();
+            MktDataHandler mktDataHandler = new MktDataHandler(mediator, inLogger, contract);
+            mediator.getConnectionHandler().getApiController().reqOptionMktData(list.get(0).contract(), "", true, mktDataHandler);
+        }
     }
 }

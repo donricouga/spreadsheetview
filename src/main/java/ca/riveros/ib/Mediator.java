@@ -4,9 +4,12 @@ import ca.riveros.ib.handlers.*;
 import ca.riveros.ib.model.SpreadsheetModel;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.stage.Stage;
+import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
 import java.util.List;
+import java.util.Observable;
 
 public class Mediator extends Application {
 
@@ -19,8 +22,6 @@ public class Mediator extends Application {
     private Logger outLogger;
     private Logger messageLogger;
     private AccountInfoHandler accountInfoHandler;
-    private MktDataHandler mktDataHandler;
-    private ContractDetailsHandler contractDetailsHandler;
 
     public Mediator() {
         mainWindow = new TwsIbSpreadSheetView(this);
@@ -56,8 +57,10 @@ public class Mediator extends Application {
             outLogger.log("Cancelling subscription for account " + accountInfoHandler.getAccount());
             connectionHandler.getApiController().reqAccountUpdates(false, accountInfoHandler.getAccount(), accountInfoHandler);
         }
-        mktDataHandler = new MktDataHandler(this, inLogger);
-        accountInfoHandler = new AccountInfoHandler(this, mktDataHandler, account, inLogger);
+
+        //Only one instance of a handler should exist.
+        if(accountInfoHandler == null)
+            accountInfoHandler = new AccountInfoHandler(this, account, inLogger);
         connectionHandler.getApiController().reqAccountUpdates(true, account, accountInfoHandler);
     }
 
@@ -67,6 +70,10 @@ public class Mediator extends Application {
      */
     public void updateSpreadsheetViewGrid(List<SpreadsheetModel> list ) {
         mainWindow.updateSpreadsheetViewGrid(list);
+    }
+
+    public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells() {
+        return mainWindow.spreadSheetView.getGrid().getRows();
     }
 
     /**
