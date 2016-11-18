@@ -29,6 +29,7 @@ package ca.riveros.ib;
 import ca.riveros.ib.handlers.ConnectionHandler;
 import ca.riveros.ib.model.SpreadsheetModel;
 import ca.riveros.ib.ui.BorderSlideBar;
+import ca.riveros.ib.ui.ColumnColourListener;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,6 +44,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -60,6 +62,10 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static ca.riveros.ib.TableColumnIndexes.ASK;
+import static ca.riveros.ib.TableColumnIndexes.BID;
+import static ca.riveros.ib.TableColumnIndexes.CONTRACTID;
 
 /**
  * Build the UI and launch the Application
@@ -151,8 +157,10 @@ public class TwsIbSpreadSheetView extends Application {
             c.fitColumn();
         });
 
-        //freeze contract column and set first column size to 150
+        //freeze contract column and hide bid,ask and contract id
         spreadSheetView.getColumns().get(0).setFixed(true);
+        spreadSheetView.getColumns().addListener(new ColumnColourListener());
+        hideUnecessaryColumns();
 
         borderPane.setCenter(spreadSheetView);
 
@@ -230,6 +238,18 @@ public class TwsIbSpreadSheetView extends Application {
         return tabPane;
     }
 
+    private void hideUnecessaryColumns() {
+        spreadSheetView.getColumns().get(BID.getIndex()).setMaxWidth(0);
+        spreadSheetView.getColumns().get(BID.getIndex()).setPrefWidth(0);
+        spreadSheetView.getColumns().get(BID.getIndex()).setMinWidth(0);
+        spreadSheetView.getColumns().get(ASK.getIndex()).setMaxWidth(0);
+        spreadSheetView.getColumns().get(ASK.getIndex()).setPrefWidth(0);
+        spreadSheetView.getColumns().get(ASK.getIndex()).setMinWidth(0);
+        spreadSheetView.getColumns().get(CONTRACTID.getIndex()).setMaxWidth(0);
+        spreadSheetView.getColumns().get(CONTRACTID.getIndex()).setPrefWidth(0);
+        spreadSheetView.getColumns().get(CONTRACTID.getIndex()).setMinWidth(0);
+    }
+
 
     public void updateSpreadsheetViewGrid(List<SpreadsheetModel> list) {
         Grid g = spreadSheetView.getGrid();
@@ -250,26 +270,31 @@ public class TwsIbSpreadSheetView extends Application {
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),4,1,1,sm.getEntry$()));
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),5,1,1,sm.getMid()));
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),6,1,1,sm.getMarket$()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),7,1,1,sm.getUnrealPL()));
+            SpreadsheetCell unrealPNLCell = SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),7,1,1,sm.getUnrealPL());
+            if(sm.getUnrealPL() > 0)
+                unrealPNLCell.getStyleClass().add("positive");
+            else
+                unrealPNLCell.getStyleClass().add("negative");
+            rowsList.add(unrealPNLCell);
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),8,1,1,sm.getRealPL()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),9,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),10,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),11,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),12,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),13,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),14,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),15,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),16,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),17,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),18,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),19,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),20,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),21,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),22,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),23,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),24,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),25,1,1,sm.getKcQty()));
-            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),26,1,1,sm.getKcQty()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),9,1,1,sm.getPercentOfPort()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),10,1,1,sm.getPercentPL()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),11,1,1,sm.getMargin()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),12,1,1,sm.getProbOfProfit()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),13,1,1,sm.getKcPercentagePort()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),14,1,1,sm.getProfitPercentage()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),15,1,1,sm.getLossPercentage()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),16,1,1,sm.getKcEdge()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),17,1,1,sm.getKcProfitPercentage()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),18,1,1,sm.getKcLossPercentage()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),19,1,1,sm.getKcTakeProfit$()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),20,1,1,sm.getKcTakeLoss$()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),21,1,1,sm.getKcNetProfit$()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),22,1,1,sm.getKcNetLoss$()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),23,1,1,sm.getKcMaxLoss()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),24,1,1,sm.getNotional()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),25,1,1,sm.getDelta()));
+            rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),26,1,1,sm.getImpVolPercentage()));
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),27,1,1,sm.getBid())); //BID
             rowsList.add(SpreadsheetCellType.DOUBLE.createCell(counter.intValue(),28,1,1,sm.getMid())); //ASK
             rowsList.add(SpreadsheetCellType.INTEGER.createCell(counter.intValue(),29,1,1,sm.getContractId()));

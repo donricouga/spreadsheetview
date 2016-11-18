@@ -9,10 +9,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
-
-import static ca.riveros.ib.TableColumnIndexes.ASK;
-import static ca.riveros.ib.TableColumnIndexes.BID;
-import static ca.riveros.ib.TableColumnIndexes.MID;
+import static ca.riveros.ib.TableColumnIndexes.*;
 
 /**
  * Created by admin on 11/8/16.
@@ -69,11 +66,13 @@ public class MktDataHandler implements ApiController.IOptHandler {
         logger.log("Finished receiving market data for contract " + contract.description() + " " + contract.conid());
         ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData = mediator.getSpreadSheetCells();
         spreadSheetData.forEach(obList -> {
-            Platform.runLater(() -> {
-                obList.get(BID.getIndex()).setItem(bid);
-                obList.get(ASK.getIndex()).setItem(ask);
-                obList.get(MID.getIndex()).setItem((bid + ask) / 2);
-            });
+            if((Integer) obList.get(CONTRACTID.getIndex()).getItem() == contract.conid()) {
+                Platform.runLater(() -> {
+                    obList.get(BID.getIndex()).setItem(bid);
+                    obList.get(ASK.getIndex()).setItem(ask);
+                    obList.get(MID.getIndex()).setItem((bid + ask) / 2);
+                });
+            }
         });
     }
 

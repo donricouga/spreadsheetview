@@ -2,6 +2,7 @@ package ca.riveros.ib;
 
 import ca.riveros.ib.handlers.*;
 import ca.riveros.ib.model.SpreadsheetModel;
+import com.ib.controller.AccountSummaryTag;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,7 +10,6 @@ import javafx.stage.Stage;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
 import java.util.List;
-import java.util.Observable;
 
 public class Mediator extends Application {
 
@@ -29,15 +29,20 @@ public class Mediator extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        //Set Stage
-        primaryStage = stage;
-        mainWindow.start(primaryStage);
 
         //Create TWS Connection
         inLogger = new Logger(mainWindow.inLoggerText);
         outLogger = new Logger(mainWindow.outLoggerText);
         messageLogger = new Logger(mainWindow.messagesLoggerText);
         connectionHandler = new ConnectionHandler(this, inLogger, outLogger, messageLogger);
+
+        //Set Stage
+        primaryStage = stage;
+        mainWindow.start(primaryStage);
+
+        //Get account summary data
+        connectionHandler.getApiController()
+                .reqAccountSummary("All", AccountSummaryTag.values(), new AccountSummaryHandler(this, inLogger));
     }
 
     /**
@@ -82,6 +87,22 @@ public class Mediator extends Application {
      */
     public void updateAccountNetLiq(String value) {
         mainWindow.accountNetLiqTextField.setText(value);
+    }
+
+    /**
+     * Update the total net Liq for all accounts
+     * @return
+     */
+    public void updateTotalNetLiq(String value) {
+        mainWindow.totalNetLiqTextField.setText(value);
+    }
+
+    /**
+     * Update the total Init Margin for all accounts
+     * @return
+     */
+    public void updateTotalInitMargin(String value) {
+        mainWindow.totalInitMarginTextField.setText(value);
     }
 
     public ConnectionHandler getConnectionHandler() {
