@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
+import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.*;
 
 /**
@@ -63,14 +64,15 @@ public class MktDataHandler implements ApiController.IOptHandler {
 
     @Override
     public void tickSnapshotEnd() {
-        logger.log("Finished receiving market data for contract " + contract.description() + " " + contract.conid());
         ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData = mediator.getSpreadSheetCells();
         spreadSheetData.forEach(obList -> {
             if((Integer) obList.get(CONTRACTID.getIndex()).getItem() == contract.conid()) {
                 Platform.runLater(() -> {
-                    obList.get(BID.getIndex()).setItem(bid);
-                    obList.get(ASK.getIndex()).setItem(ask);
-                    obList.get(MID.getIndex()).setItem((bid + ask) / 2);
+                    updateCellValue(obList.get(BID.getIndex()), bid);
+                    updateCellValue(obList.get(ASK.getIndex()), ask);
+                    Double mid = (bid + ask) / 2;
+                    logger.log("Setting Mid Price for " + contract.description() + " " + contract.conid() + " to " + mid);
+                    updateCellValue(obList.get(MID.getIndex()), mid);
                 });
             }
         });

@@ -18,8 +18,17 @@
 
 /* Background colour based on Dollar Value */
 .spreadsheet-cell.positive{
+
+
+
+
+
+
+
     -fx-background-color: #8ED566;
 }
+
+
 
 .spreadsheet-cell.negative{
     -fx-background-color: #CB5A5A;

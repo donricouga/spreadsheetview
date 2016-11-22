@@ -24,8 +24,6 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
     @Override
     public void accountSummary(String account, AccountSummaryTag tag, String value, String currency) {
 
-        System.out.println("TAG = " + tag.name());
-
         if ("InitMarginReq".equals(tag.name())) {
             inLogger.log("INIT MARGIN REQ " + value + " FOR ACCOUNT " + account);
             totalInitMarginReq = totalInitMarginReq + Double.valueOf(value);
