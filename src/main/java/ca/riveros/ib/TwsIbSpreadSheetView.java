@@ -26,10 +26,16 @@
  */
 package ca.riveros.ib;
 
+import ca.riveros.ib.events.MarginActionEvent;
 import ca.riveros.ib.model.SpreadsheetModel;
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -39,6 +45,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.controlsfx.control.spreadsheet.*;
@@ -233,7 +240,11 @@ public class TwsIbSpreadSheetView extends Application {
 
     private SpreadsheetCell createCell(int row, int col, Double value, Boolean editable) {
         SpreadsheetCell cell = SpreadsheetCellType.DOUBLE.createCell(row, col, 1, 1, value);
-        cell.setEditable(editable);
+        cell.setEditable(editable); 
+        if(col == MARGIN.getIndex()) {
+            cell.itemProperty().addListener(
+                    new MarginActionEvent(spreadSheetView.getGrid().getRows(), Double.valueOf(accountNetLiqTextField.getText())));
+        }
         return cell;
     }
 
