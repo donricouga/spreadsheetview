@@ -8,21 +8,17 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
-import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.*;
 
 /**
- * Listener that listens for user to enter a margin and quickly calculates the % of Port which is
- * (Margin / AccountNetLiq)
+ * Created by admin on 11/24/16.
  */
-public class MarginActionEvent implements ChangeListener<Object> {
+public class KCEdgeEvent implements ChangeListener<Object> {
 
     private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList;
-    private Double accountNetLiq;
 
-    public MarginActionEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList, Double accountNetLiq) {
+    public KCEdgeEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList) {
         this.spreadsheetDataList = spreadsheetDataList;
-        this.accountNetLiq = accountNetLiq;
     }
 
     @Override
@@ -31,11 +27,9 @@ public class MarginActionEvent implements ChangeListener<Object> {
         SpreadsheetCell c = (SpreadsheetCell) base.getBean();
         int row = c.getRow();
         Platform.runLater(() -> {
-            SpreadsheetCell perOfPortCell = spreadsheetDataList.get(row).get(PEROFPORT.getIndex());
             String account = spreadsheetDataList.get(row).get(ACCOUNT.getIndex()).getText();
             String contractId = spreadsheetDataList.get(row).get(CONTRACTID.getIndex()).getText();
-            updateCellValue(perOfPortCell, ((Double) newValue) / accountNetLiq);
-            PersistentFields.setValue(account, Integer.valueOf(contractId), MARGIN.getIndex(), (Double) newValue);
+            PersistentFields.setValue(account, Integer.valueOf(contractId), KCEDGE.getIndex(), (Double) newValue);
         });
     }
 

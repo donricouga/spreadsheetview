@@ -26,17 +26,14 @@
  */
 package ca.riveros.ib;
 
-import ca.riveros.ib.data.PersistentFields;
-import ca.riveros.ib.events.MarginActionEvent;
+import ca.riveros.ib.events.*;
 import ca.riveros.ib.model.SpreadsheetModel;
 import javafx.application.Application;
-import javafx.beans.property.ObjectProperty;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -46,7 +43,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.controlsfx.control.spreadsheet.*;
@@ -90,6 +86,8 @@ public class TwsIbSpreadSheetView extends Application {
     TextArea outLoggerText = new TextArea("");
     TextArea messagesLoggerText = new TextArea("");
 
+    private Boolean logsDisplayed = false;
+
     public TwsIbSpreadSheetView(Mediator mediator) {
         this.mediator = mediator;
     }
@@ -109,7 +107,7 @@ public class TwsIbSpreadSheetView extends Application {
     private final List<String> columnData = Arrays.asList("Contract", "Qty", "KC-Qty", "Qty. Open/Close", "Entry $", "Mid",
             "Market $", "Unreal P/L", "Real P/L", "% of Port", "% P/L", "Margin", "Prob. Profit", "KC % Port", "Profit %", "Loss %",
             "KC Edge", "KC Profit %", "KC Loss %", "KC Take Profit $", "KC Take Loss $", "KC Net Profit $", "KC Net Loss", "KC Max Loss",
-            "Notional", "Delta", "ImpVol %", "Bid", "Ask", "Contract Id", "Symbol");
+            "Notional", "Delta", "ImpVol %", "Bid", "Ask", "Contract Id", "Symbol", "Account");
 
     //@Override
     public String getSampleName() {
@@ -121,7 +119,7 @@ public class TwsIbSpreadSheetView extends Application {
         borderPane = new BorderPane();
 
         int rowCount = 100;
-        int columnCount = 31;
+        int columnCount = columnData.size();
         GridBase grid = new GridBase(rowCount, columnCount);
 
         ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
@@ -150,7 +148,7 @@ public class TwsIbSpreadSheetView extends Application {
 
         //set the default column configuration
         spreadSheetView.getColumns().get(0).setFixed(true);
-        //hideUnecessaryColumns();   FOR NOW JUST SHOW UNTIL RELEASE TO CLIENT
+        hideUnecessaryColumns();
 
         borderPane.setCenter(spreadSheetView);
 
@@ -159,9 +157,24 @@ public class TwsIbSpreadSheetView extends Application {
 
 
         borderPane.setTop(createTopOfBorderPane());
-        //BorderSlideBar logSlideBar = new BorderSlideBar(100, logButton, Pos.BOTTOM_LEFT, new Label("Ricardo"));
-        //logSlideBar.getChildren().add(createLogViewTabs());
-        borderPane.setBottom(createLogViewTabs());
+
+        //Bottom Pane
+        logButton.setOnAction(e -> {
+            if(logsDisplayed) {
+                Platform.runLater(() -> {
+                    borderPane.setBottom(null);
+                    logButton.setText("Show Logs");
+                    logsDisplayed = false;
+                });
+            }
+            else {
+                Platform.runLater(() -> {
+                    borderPane.setBottom(createLogViewTabs());
+                    logButton.setText("Hide Logs");
+                    logsDisplayed = true;
+                });
+            }
+        });
         return borderPane;
     }
 
@@ -203,7 +216,8 @@ public class TwsIbSpreadSheetView extends Application {
         gridPane.add(totalInitMarginLabel, 6, 0, 1, 1);
         gridPane.add(totalInitMarginTextField, 7, 0, 1, 1);
         gridPane.add(perCapToTradeLabel, 8, 0, 1, 1);
-        gridPane.add(perCapitalToTradeTextField, 9, 0, GridPane.REMAINING, 1);
+        gridPane.add(perCapitalToTradeTextField, 9, 0, 1, 1);
+        gridPane.add(logButton, 10, 0, 1, 1);
 
         return gridPane;
     }
@@ -238,15 +252,21 @@ public class TwsIbSpreadSheetView extends Application {
         spreadSheetView.getColumns().get(CONTRACTID.getIndex()).setMaxWidth(0);
         spreadSheetView.getColumns().get(CONTRACTID.getIndex()).setPrefWidth(0);
         spreadSheetView.getColumns().get(CONTRACTID.getIndex()).setMinWidth(0);
+        spreadSheetView.getColumns().get(ACCOUNT.getIndex()).setMaxWidth(0);
+        spreadSheetView.getColumns().get(ACCOUNT.getIndex()).setPrefWidth(0);
+        spreadSheetView.getColumns().get(ACCOUNT.getIndex()).setMinWidth(0);
     }
 
     private SpreadsheetCell createCell(int row, int col, Double value, Boolean editable) {
         SpreadsheetCell cell = SpreadsheetCellType.DOUBLE.createCell(row, col, 1, 1, value);
-        cell.setEditable(editable); 
-        if(col == MARGIN.getIndex()) {
-            cell.itemProperty().addListener(
-                    new MarginActionEvent(spreadSheetView.getGrid().getRows(), Double.valueOf(accountNetLiqTextField.getText())));
-        }
+        cell.setEditable(editable);
+        return cell;
+    }
+
+    private SpreadsheetCell createCell(int row, int col, Double value, Boolean editable, String cssClass, ChangeListener cl) {
+        SpreadsheetCell cell = createCell(row,col,value,editable);
+        cell.getStyleClass().add(cssClass);
+        cell.itemProperty().addListener(cl);
         return cell;
     }
 
@@ -280,12 +300,18 @@ public class TwsIbSpreadSheetView extends Application {
             rowsList.add(createCell(counter.intValue(),8,sm.getRealPL(),false));
             rowsList.add(createCell(counter.intValue(),9,sm.getPercentOfPort(),false));
             rowsList.add(createCell(counter.intValue(),10,sm.getPercentPL(),false));
-            rowsList.add(createCell(counter.intValue(),11,getValue(account,sm.getContractId(), MARGIN.getIndex(), 0.0), true));
-            rowsList.add(createCell(counter.intValue(),12,getValue(account, sm.getContractId(), PROBPROFIT.getIndex(), 0.91), true));
-            rowsList.add(createCell(counter.intValue(),13,getValue(account, sm.getContractId(), KCPERPORT.getIndex(), 0.0075), true));
-            rowsList.add(createCell(counter.intValue(),14,getValue(account, sm.getContractId(), PROFITPER.getIndex(), 0.57), true));
-            rowsList.add(createCell(counter.intValue(),15,getValue(account, sm.getContractId(), LOSSPER.getIndex(), 2.2), true));
-            rowsList.add(createCell(counter.intValue(),16,getValue(account, sm.getContractId(), KCEDGE.getIndex(), 0.1), true));
+            rowsList.add(createCell(counter.intValue(),11,getValue(account,sm.getContractId(), MARGIN.getIndex(), 0.0), true, "manualo",
+                    new MarginActionEvent(spreadSheetView.getGrid().getRows(), Double.valueOf(accountNetLiqTextField.getText()))));
+            rowsList.add(createCell(counter.intValue(),12,getValue(account, sm.getContractId(), PROBPROFIT.getIndex(), 0.91), true, "manualo",
+                    new ProbabilityOfProfitEvent(spreadSheetView.getGrid().getRows())));
+            rowsList.add(createCell(counter.intValue(),13,getValue(account, sm.getContractId(), KCPERPORT.getIndex(), 0.0075), true, "manualy",
+                    new KCPercentPortEvent((spreadSheetView.getGrid().getRows()))));
+            rowsList.add(createCell(counter.intValue(),14,getValue(account, sm.getContractId(), PROFITPER.getIndex(), 0.57), true, "manualy",
+                    new ProfitPercentageEvent(spreadSheetView.getGrid().getRows())));
+            rowsList.add(createCell(counter.intValue(),15,getValue(account, sm.getContractId(), LOSSPER.getIndex(), 2.2), true, "manualy",
+                    new LossPercentageEvent(spreadSheetView.getGrid().getRows())));
+            rowsList.add(createCell(counter.intValue(),16,getValue(account, sm.getContractId(), KCEDGE.getIndex(), 0.1), true, "manualy",
+                    new KCEdgeEvent(spreadSheetView.getGrid().getRows())));
             rowsList.add(createCell(counter.intValue(),17,sm.getKcProfitPercentage(),false));
             rowsList.add(createCell(counter.intValue(),18,sm.getKcLossPercentage(),false));
             rowsList.add(createCell(counter.intValue(),19,sm.getKcTakeProfit$(),false));
@@ -300,6 +326,7 @@ public class TwsIbSpreadSheetView extends Application {
             rowsList.add(createCell(counter.intValue(),28,sm.getMid(),false)); //ASK
             rowsList.add(SpreadsheetCellType.INTEGER.createCell(counter.intValue(),29,1,1,sm.getContractId()));
             rowsList.add(SpreadsheetCellType.STRING.createCell(counter.intValue(),30,1,1,sm.getSymbol()));
+            rowsList.add(SpreadsheetCellType.STRING.createCell(counter.intValue(),31,1,1,sm.getAccount()));
             counter.incrementAndGet();
             spreadsheetModelObservableList.add(rowsList);
         });

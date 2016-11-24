@@ -18,20 +18,20 @@
 
 /* Background colour based on Dollar Value */
 .spreadsheet-cell.positive{
-
-
-
-
-
-
-
     -fx-background-color: #8ED566;
 }
 
-
-
 .spreadsheet-cell.negative{
     -fx-background-color: #CB5A5A;
+}
+
+/* Background colour for manual fields */
+.spreadsheet-cell.manualo{
+    -fx-background-color: #E8AA51;
+}
+
+.spreadsheet-cell.manualy{
+    -fx-background-color: #EDED77;
 }
 
 /* SEPARATOR */

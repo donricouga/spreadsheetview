@@ -31,7 +31,8 @@ public enum TableColumnIndexes {
     BID(27),  //Hide This Column
     ASK(28),  //Hide This Column
     CONTRACTID(29), //Hide This Column
-    SYMBOL(30); //Hide this Column
+    SYMBOL(30), //Hide this Column
+    ACCOUNT(31); //Hide this Column
 
     private int index;
 
