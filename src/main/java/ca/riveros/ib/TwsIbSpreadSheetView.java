@@ -26,6 +26,7 @@
  */
 package ca.riveros.ib;
 
+import ca.riveros.ib.data.PersistentFields;
 import ca.riveros.ib.events.MarginActionEvent;
 import ca.riveros.ib.model.SpreadsheetModel;
 import javafx.application.Application;
@@ -55,6 +56,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ca.riveros.ib.TableColumnIndexes.*;
+import static ca.riveros.ib.data.PersistentFields.getValue;
 
 /**
  * Build the UI and launch the Application
@@ -251,6 +253,7 @@ public class TwsIbSpreadSheetView extends Application {
 
     public void updateSpreadsheetViewGrid(List<SpreadsheetModel> list) {
         Grid g = spreadSheetView.getGrid();
+        String account = accountComboBox.getValue();
 
         //Create a Collection<ObservableList<SpreadsheetCell>>
         ObservableList<ObservableList<SpreadsheetCell>> spreadsheetModelObservableList = FXCollections.observableArrayList();
@@ -277,12 +280,12 @@ public class TwsIbSpreadSheetView extends Application {
             rowsList.add(createCell(counter.intValue(),8,sm.getRealPL(),false));
             rowsList.add(createCell(counter.intValue(),9,sm.getPercentOfPort(),false));
             rowsList.add(createCell(counter.intValue(),10,sm.getPercentPL(),false));
-            rowsList.add(createCell(counter.intValue(),11,sm.getMargin(), true));
-            rowsList.add(createCell(counter.intValue(),12,sm.getProbOfProfit(), true));
-            rowsList.add(createCell(counter.intValue(),13,sm.getKcPercentagePort(), true));
-            rowsList.add(createCell(counter.intValue(),14,sm.getProfitPercentage(), true));
-            rowsList.add(createCell(counter.intValue(),15,sm.getLossPercentage(), true));
-            rowsList.add(createCell(counter.intValue(),16,sm.getKcEdge(), true));
+            rowsList.add(createCell(counter.intValue(),11,getValue(account,sm.getContractId(), MARGIN.getIndex(), 0.0), true));
+            rowsList.add(createCell(counter.intValue(),12,getValue(account, sm.getContractId(), PROBPROFIT.getIndex(), 0.91), true));
+            rowsList.add(createCell(counter.intValue(),13,getValue(account, sm.getContractId(), KCPERPORT.getIndex(), 0.0075), true));
+            rowsList.add(createCell(counter.intValue(),14,getValue(account, sm.getContractId(), PROFITPER.getIndex(), 0.57), true));
+            rowsList.add(createCell(counter.intValue(),15,getValue(account, sm.getContractId(), LOSSPER.getIndex(), 2.2), true));
+            rowsList.add(createCell(counter.intValue(),16,getValue(account, sm.getContractId(), KCEDGE.getIndex(), 0.1), true));
             rowsList.add(createCell(counter.intValue(),17,sm.getKcProfitPercentage(),false));
             rowsList.add(createCell(counter.intValue(),18,sm.getKcLossPercentage(),false));
             rowsList.add(createCell(counter.intValue(),19,sm.getKcTakeProfit$(),false));

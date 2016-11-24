@@ -10,6 +10,10 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.PEROFPORT;
 
+/**
+ * Listener that listens for user to enter a margin and quickly calculates the % of Port which is
+ * (Margin / AccountNetLiq)
+ */
 public class MarginActionEvent implements ChangeListener<Object> {
 
     private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList;

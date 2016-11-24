@@ -16,6 +16,7 @@ public final class PersistentFields {
             FileInputStream in = new FileInputStream(file);
             properties.load(in);
             in.close();
+            System.out.println("Loaded keyvalue.properties");
         } catch (FileNotFoundException fnfe) {
             System.out.println(fnfe);
             System.exit(-1);
