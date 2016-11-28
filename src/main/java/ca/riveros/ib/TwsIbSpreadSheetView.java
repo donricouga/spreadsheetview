@@ -28,12 +28,12 @@ package ca.riveros.ib;
 
 import ca.riveros.ib.events.*;
 import ca.riveros.ib.model.SpreadsheetModel;
+import ca.riveros.ib.pickers.ColumnSortPicker;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -149,6 +149,11 @@ public class TwsIbSpreadSheetView extends Application {
         //set the default column configuration
         spreadSheetView.getColumns().get(0).setFixed(true);
         hideUnecessaryColumns();
+
+        //set pickers
+        for(int i = 0; i < spreadSheetView.getColumns().size(); i++) {
+            spreadSheetView.getColumnPickers().put(i, new ColumnSortPicker(grid, i));
+        }
 
         borderPane.setCenter(spreadSheetView);
 

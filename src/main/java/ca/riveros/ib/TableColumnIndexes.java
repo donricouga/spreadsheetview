@@ -19,7 +19,7 @@ public enum TableColumnIndexes {
     LOSSPER(15), //editable
     KCEDGE(16), //editable
     KCPROFITPER(17),
-    KCLOSSPER(18), //"<html><center>KC<br>Loss Level"
+    KCLOSSPER(18),
     KCTAKEPROFITDOL(19),
     KCTAKELOSSDOL(20),
     KCNETPROFITDOL(21),
