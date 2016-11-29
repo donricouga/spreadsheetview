@@ -563,7 +563,7 @@ public class HelloSpreadsheetView extends Application {
                 cell.setGraphic(new ImageView(new Image(Thread.currentThread()
                         .getContextClassLoader().getResource("exclamation.png").toString())));
             }
-            cell.setFormat("#" + "%");
+            cell.setFormat("##.##" + "%");
             increase.add(cell);
         }
         return increase;

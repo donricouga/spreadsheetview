@@ -6,6 +6,8 @@ import com.ib.controller.AccountSummaryTag;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.stage.Stage;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
@@ -16,6 +18,8 @@ public class Mediator extends Application {
     private TwsIbSpreadSheetView mainWindow;
     private Stage primaryStage;
 
+    public static Mediator INSTANCE = null;
+
     //TWS API Handlers
     private ConnectionHandler connectionHandler;
     private Logger inLogger;
@@ -25,6 +29,7 @@ public class Mediator extends Application {
 
     public Mediator() {
         mainWindow = new TwsIbSpreadSheetView(this);
+        INSTANCE = this;
     }
 
     @Override

@@ -7,9 +7,12 @@ import com.ib.client.Types;
 import com.ib.controller.ApiController;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
+import org.controlsfx.control.spreadsheet.SpreadsheetCellBase;
 
 import static ca.riveros.ib.Common.updateCellValue;
+import static ca.riveros.ib.events.EventTypes.twsEndStreamEventType;
 import static ca.riveros.ib.TableColumnIndexes.*;
 
 /**
@@ -72,7 +75,10 @@ public class MktDataHandler implements ApiController.IOptHandler {
                     updateCellValue(obList.get(ASK.getIndex()), ask);
                     Double mid = (bid + ask) / 2;
                     logger.log("Setting Mid Price for " + contract.description() + " " + contract.conid() + " to " + mid);
-                    updateCellValue(obList.get(MID.getIndex()), mid);
+                    SpreadsheetCell midCell = obList.get(MID.getIndex());
+                    updateCellValue(midCell, mid);
+                    Event.fireEvent((SpreadsheetCellBase) midCell, new Event(twsEndStreamEventType));
+
                 });
             }
         });
