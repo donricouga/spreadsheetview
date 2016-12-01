@@ -110,6 +110,18 @@ public class Mediator extends Application {
         mainWindow.totalInitMarginTextField.setText(value);
     }
 
+    /**
+     * Get the Total NetLiq
+     * @return
+     */
+    public Double getAccountNetLiq() {
+        try {
+            return Double.valueOf(mainWindow.totalNetLiqTextField.getText());
+        } catch(NumberFormatException nfe) {
+            return 0.0;
+        }
+    }
+
     public ConnectionHandler getConnectionHandler() {
         return connectionHandler;
     }

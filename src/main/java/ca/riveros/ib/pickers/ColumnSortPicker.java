@@ -1,6 +1,5 @@
 package ca.riveros.ib.pickers;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.Grid;
@@ -24,13 +23,13 @@ public class ColumnSortPicker extends Picker {
 
     @Override
     public void onClick() {
+        ObservableList<ObservableList<SpreadsheetCell>> spreadsheetModelObservableList = FXCollections.observableArrayList();
         ObservableList<ObservableList<SpreadsheetCell>> list = view.getGrid().getRows();
         System.out.println("Clicked " + index);
         FXCollections.sort(list, new ColumnSortComparator(index));
-        //Platform.runLater(() -> {
-            Grid grid = view.getGrid();
-            grid.setRows(list);
-            view.setGrid(grid);
-        //});
+        spreadsheetModelObservableList.addAll(list);
+        Grid grid = view.getGrid();
+        grid.setRows(spreadsheetModelObservableList);
+        view.setGrid(grid);
     }
 }

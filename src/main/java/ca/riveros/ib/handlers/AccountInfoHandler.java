@@ -22,7 +22,6 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
     private Mediator mediator;
 
     //Handlers
-    private MktDataHandler mktDataHandler;
     private ContractDetailsHandler contractDetailsHandler;
     private Logger inLogger;
 
@@ -87,6 +86,7 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
         model.setNotional(pos.marketValue());
         model.setRealPL(pos.realPnl());
         model.setUnrealPL(pos.unrealPnl());
+        model.setAccount(pos.account());
 
         return model;
     }

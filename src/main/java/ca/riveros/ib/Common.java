@@ -1,5 +1,6 @@
 package ca.riveros.ib;
 
+import javafx.application.Platform;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
 import java.util.List;

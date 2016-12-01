@@ -90,6 +90,7 @@ public class TwsIbSpreadSheetView extends Application {
     //Formats
     private String percentFormat = "##.##" + "%";
     private String dollarFormat = "\u0024" + "#,##0.00";
+    private String decimalFormat = "#.0000";
 
 
     private Boolean logsDisplayed = false;
@@ -266,6 +267,9 @@ public class TwsIbSpreadSheetView extends Application {
         spreadSheetView.getColumns().get(ACCOUNT.getIndex()).setMaxWidth(0);
         spreadSheetView.getColumns().get(ACCOUNT.getIndex()).setPrefWidth(0);
         spreadSheetView.getColumns().get(ACCOUNT.getIndex()).setMinWidth(0);
+        spreadSheetView.getColumns().get(SYMBOL.getIndex()).setMaxWidth(0);
+        spreadSheetView.getColumns().get(SYMBOL.getIndex()).setPrefWidth(0);
+        spreadSheetView.getColumns().get(SYMBOL.getIndex()).setMinWidth(0);
     }
 
     private SpreadsheetCell createCell(int row, int col, Double value, Boolean editable) {
@@ -310,20 +314,20 @@ public class TwsIbSpreadSheetView extends Application {
             contractCell.setWrapText(true);
             rowsList.add(contractCell);
             rowsList.add(createCell(counter.intValue(),1,sm.getQty(),false));
-            rowsList.add(createCell(counter.intValue(),2,sm.getKcQty(),false));
-            rowsList.add(createCell(counter.intValue(),3,sm.getQtyOpenClose(),false));
+            rowsList.add(createCell(counter.intValue(),2,sm.getKcQty(),false, decimalFormat));
+            rowsList.add(createCell(counter.intValue(),3,sm.getQtyOpenClose(),false, decimalFormat));
             rowsList.add(createCell(counter.intValue(),4,sm.getEntry$(),false, dollarFormat));
-            SpreadsheetCell mid = createCell(counter.intValue(),5,sm.getMid(),false);
+            SpreadsheetCell mid = createCell(counter.intValue(),5,sm.getMid(),false, decimalFormat);
             mid.addEventHandler(twsEndStreamEventType, new TWSEndStreamEventHandler());
             rowsList.add(mid);
             rowsList.add(createCell(counter.intValue(),6,sm.getMarket$(),false, dollarFormat));
-            SpreadsheetCell unrealPNLCell = createCell(counter.intValue(),7,sm.getUnrealPL(),false);
+            SpreadsheetCell unrealPNLCell = createCell(counter.intValue(),7,sm.getUnrealPL(),false, dollarFormat);
             if(sm.getUnrealPL() > 0)
                 unrealPNLCell.getStyleClass().add("positive");
             else
                 unrealPNLCell.getStyleClass().add("negative");
             rowsList.add(unrealPNLCell);
-            rowsList.add(createCell(counter.intValue(),8,sm.getRealPL(),false));
+            rowsList.add(createCell(counter.intValue(),8,sm.getRealPL(),false, dollarFormat));
             rowsList.add(createCell(counter.intValue(),9,sm.getPercentOfPort(),false, percentFormat));
             rowsList.add(createCell(counter.intValue(),10,sm.getPercentPL(),false, percentFormat));
             rowsList.add(createCell(counter.intValue(),11,getValue(account,sm.getContractId(), MARGIN.getIndex(), 0.0), true, "manualo",
@@ -338,14 +342,14 @@ public class TwsIbSpreadSheetView extends Application {
                     new LossPercentageEvent(spreadSheetView.getGrid().getRows()), percentFormat));
             rowsList.add(createCell(counter.intValue(),16,getValue(account, sm.getContractId(), KCEDGE.getIndex(), 0.1), true, "manualy",
                     new KCEdgeEvent(spreadSheetView.getGrid().getRows()), percentFormat));
-            rowsList.add(createCell(counter.intValue(),17,getValue(account, sm.getContractId(), PROFITPER.getIndex(), 0.57),false)); //KC Profit percentage
-            rowsList.add(createCell(counter.intValue(),18,sm.getKcLossPercentage(),false));
-            rowsList.add(createCell(counter.intValue(),19,sm.getKcTakeProfit$(),false));
-            rowsList.add(createCell(counter.intValue(),20,sm.getKcTakeLoss$(),false));
-            rowsList.add(createCell(counter.intValue(),21,sm.getKcNetProfit$(),false));
-            rowsList.add(createCell(counter.intValue(),22,sm.getKcNetLoss$(),false));
+            rowsList.add(createCell(counter.intValue(),17,getValue(account, sm.getContractId(), PROFITPER.getIndex(), 0.57),false, percentFormat)); //KC Profit percentage
+            rowsList.add(createCell(counter.intValue(),18,sm.getKcLossPercentage(),false, percentFormat));
+            rowsList.add(createCell(counter.intValue(),19,sm.getKcTakeProfit$(),false, dollarFormat));
+            rowsList.add(createCell(counter.intValue(),20,sm.getKcTakeLoss$(),false, dollarFormat));
+            rowsList.add(createCell(counter.intValue(),21,sm.getKcNetProfit$(),false, dollarFormat));
+            rowsList.add(createCell(counter.intValue(),22,sm.getKcNetLoss$(),false, dollarFormat));
             rowsList.add(createCell(counter.intValue(),23,sm.getKcMaxLoss(),false));
-            rowsList.add(createCell(counter.intValue(),24,sm.getNotional(),false));
+            rowsList.add(createCell(counter.intValue(),24,sm.getNotional(),false, dollarFormat));
             rowsList.add(createCell(counter.intValue(),25,sm.getDelta(),false));
             rowsList.add(createCell(counter.intValue(),26,sm.getImpVolPercentage(),false));
             rowsList.add(createCell(counter.intValue(),27,sm.getBid(),false)); //BID

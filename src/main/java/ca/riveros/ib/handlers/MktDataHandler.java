@@ -76,7 +76,12 @@ public class MktDataHandler implements ApiController.IOptHandler {
                     Double mid = (bid + ask) / 2;
                     logger.log("Setting Mid Price for " + contract.description() + " " + contract.conid() + " to " + mid);
                     SpreadsheetCell midCell = obList.get(MID.getIndex());
+                    SpreadsheetCell perPl = obList.get(PERPL.getIndex());
+                    Double entry$ = (Double) obList.get(ENTRYDOL.getIndex()).getItem();
                     updateCellValue(midCell, mid);
+                    updateCellValue(perPl,calculatePercentPL(mid, entry$));
+
+                    //After all the data is passed in by tws, fire an event to begin calculations of each row.
                     Event.fireEvent((SpreadsheetCellBase) midCell, new Event(twsEndStreamEventType));
 
                 });
@@ -87,5 +92,12 @@ public class MktDataHandler implements ApiController.IOptHandler {
     @Override
     public void marketDataType(Types.MktDataType marketDataType) {
 
+    }
+
+    private Double calculatePercentPL(Double mid, Double entry$) {
+        if (entry$ < 0)
+            return (entry$ - mid) / entry$;
+        else
+            return  (mid - entry$) / entry$;
     }
 }
