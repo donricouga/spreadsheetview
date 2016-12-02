@@ -13,9 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by admin on 11/7/16.
- */
 public class AccountInfoHandler implements ApiController.IAccountHandler {
 
     //Mediator
@@ -39,8 +36,9 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
 
     @Override
     public void accountValue(String account, String key, String value, String currency) {
-        inLogger.log("account : " + account + " key : " + key + " value : " + value + " currency : " + currency);
+        //inLogger.log("account : " + account + " key : " + key + " value : " + value + " currency : " + currency);
         if("NetLiquidation".equals(key)) {
+            inLogger.log("Received Net Liquidation " + value + " for account " + account);
             mediator.updateAccountNetLiq(value);
         }
     }

@@ -30,13 +30,11 @@ public class MarginActionEvent implements ChangeListener<Object> {
         ObjectProperty base = (ObjectProperty) observable;
         SpreadsheetCell c = (SpreadsheetCell) base.getBean();
         int row = c.getRow();
-        Platform.runLater(() -> {
-            SpreadsheetCell perOfPortCell = spreadsheetDataList.get(row).get(PEROFPORT.getIndex());
-            String account = spreadsheetDataList.get(row).get(ACCOUNT.getIndex()).getText();
-            String contractId = spreadsheetDataList.get(row).get(CONTRACTID.getIndex()).getText();
-            updateCellValue(perOfPortCell, ((Double) newValue) / accountNetLiq);
-            PersistentFields.setValue(account, Integer.valueOf(contractId), MARGIN.getIndex(), (Double) newValue);
-        });
+        SpreadsheetCell perOfPortCell = spreadsheetDataList.get(row).get(PEROFPORT.getIndex());
+        String account = spreadsheetDataList.get(row).get(ACCOUNT.getIndex()).getText();
+        String contractId = spreadsheetDataList.get(row).get(CONTRACTID.getIndex()).getText();
+        updateCellValue(perOfPortCell, ((Double) newValue) / accountNetLiq);
+        PersistentFields.setValue(account, Integer.valueOf(contractId), MARGIN.getIndex(), (Double) newValue);
     }
 
 }

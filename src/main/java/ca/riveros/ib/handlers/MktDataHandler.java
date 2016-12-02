@@ -1,6 +1,7 @@
 package ca.riveros.ib.handlers;
 
 import ca.riveros.ib.Mediator;
+import ca.riveros.ib.events.NetLiqChangeListener;
 import com.ib.client.Contract;
 import com.ib.client.TickType;
 import com.ib.client.Types;
@@ -27,8 +28,8 @@ public class MktDataHandler implements ApiController.IOptHandler {
     private Logger logger;
 
     //Main BID AND ASK DATA
-    private Double bid;
-    private Double ask;
+    private Double bid = 0.0;
+    private Double ask = 0.0;
 
     /** Contract ID for this Mkt Request **/
     private Contract contract;
@@ -87,6 +88,10 @@ public class MktDataHandler implements ApiController.IOptHandler {
                 });
             }
         });
+
+        //We need to add the Account Net Liq Listener here because we want it to start listening after initial load
+        mediator.addAccountNetLiqChangeListener();
+
     }
 
     @Override

@@ -8,9 +8,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
-import static ca.riveros.ib.TableColumnIndexes.ACCOUNT;
-import static ca.riveros.ib.TableColumnIndexes.CONTRACTID;
-import static ca.riveros.ib.TableColumnIndexes.PROBPROFIT;
+import static ca.riveros.ib.Common.updateCellValue;
+import static ca.riveros.ib.TableColumnIndexes.*;
 
 /**
  * Created by admin on 11/24/16.
@@ -28,11 +27,28 @@ public class ProbabilityOfProfitEvent implements ChangeListener<Object> {
         ObjectProperty base = (ObjectProperty) observable;
         SpreadsheetCell c = (SpreadsheetCell) base.getBean();
         int row = c.getRow();
-        Platform.runLater(() -> {
-            String account = spreadsheetDataList.get(row).get(ACCOUNT.getIndex()).getText();
-            String contractId = spreadsheetDataList.get(row).get(CONTRACTID.getIndex()).getText();
-            PersistentFields.setValue(account, Integer.valueOf(contractId), PROBPROFIT.getIndex(), (Double) newValue);
-        });
+        ObservableList<SpreadsheetCell> rowList = spreadsheetDataList.get(row);
+        Double probOfProfit = (Double) newValue;
+
+        //Update Persistent File with new Manual Value
+        String account = rowList.get(ACCOUNT.getIndex()).getText();
+        String contractId = rowList.get(CONTRACTID.getIndex()).getText();
+        PersistentFields.setValue(account, Integer.valueOf(contractId), PROBPROFIT.getIndex(), probOfProfit);
+
+        //Update KC Loss %
+        Double kcProfitPer = (Double) rowList.get(KCPROFITPER.getIndex()).getItem();
+        Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
+        Double kcLossPer = (kcProfitPer) / ((1/(probOfProfit - kcEdge))-1);
+        updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPer);
+
+        //Update KC Take Loss $
+        Double entry$ = (Double) rowList.get(ENTRYDOL.getIndex()).getItem();
+        Double kcTakeLoss$ = entry$ * kcLossPer;
+        updateCellValue(rowList.get(KCTAKELOSSDOL.getIndex()), kcTakeLoss$);
+
+        //Update KC Net Loss $
+        Double kcNetLoss$ = entry$ - kcTakeLoss$;
+        updateCellValue(rowList.get(KCNETLOSSDOL.getIndex()), kcNetLoss$);
     }
 
 }

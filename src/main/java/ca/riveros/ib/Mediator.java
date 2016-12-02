@@ -1,13 +1,12 @@
 package ca.riveros.ib;
 
+import ca.riveros.ib.events.NetLiqChangeListener;
 import ca.riveros.ib.handlers.*;
 import ca.riveros.ib.model.SpreadsheetModel;
 import com.ib.controller.AccountSummaryTag;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventType;
 import javafx.stage.Stage;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
@@ -26,6 +25,8 @@ public class Mediator extends Application {
     private Logger outLogger;
     private Logger messageLogger;
     private AccountInfoHandler accountInfoHandler;
+
+    private Boolean addedAccountNetLiqHandler = false;
 
     public Mediator() {
         mainWindow = new TwsIbSpreadSheetView(this);
@@ -116,10 +117,16 @@ public class Mediator extends Application {
      */
     public Double getAccountNetLiq() {
         try {
-            return Double.valueOf(mainWindow.totalNetLiqTextField.getText());
+            return Double.valueOf(mainWindow.accountNetLiqTextField.getText());
         } catch(NumberFormatException nfe) {
             return 0.0;
         }
+    }
+
+    public void addAccountNetLiqChangeListener() {
+        if(!addedAccountNetLiqHandler)
+            mainWindow.accountNetLiqTextField.textProperty().addListener(new NetLiqChangeListener(mainWindow.spreadSheetView));
+
     }
 
     public ConnectionHandler getConnectionHandler() {

@@ -11,7 +11,8 @@ public final class PersistentFields {
 
     static {
         try {
-            file = new File("keyvalue.properties");
+            String home = System.getProperty("user.home");
+            file = new File(home + "/keyvalue.properties");
             file.createNewFile();
             FileInputStream in = new FileInputStream(file);
             properties.load(in);
