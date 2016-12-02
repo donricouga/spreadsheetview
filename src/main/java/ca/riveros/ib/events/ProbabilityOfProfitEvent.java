@@ -35,20 +35,24 @@ public class ProbabilityOfProfitEvent implements ChangeListener<Object> {
         String contractId = rowList.get(CONTRACTID.getIndex()).getText();
         PersistentFields.setValue(account, Integer.valueOf(contractId), PROBPROFIT.getIndex(), probOfProfit);
 
-        //Update KC Loss %
-        Double kcProfitPer = (Double) rowList.get(KCPROFITPER.getIndex()).getItem();
-        Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
-        Double kcLossPer = (kcProfitPer) / ((1/(probOfProfit - kcEdge))-1);
-        updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPer);
+        Platform.runLater(() -> {
 
-        //Update KC Take Loss $
-        Double entry$ = (Double) rowList.get(ENTRYDOL.getIndex()).getItem();
-        Double kcTakeLoss$ = entry$ * kcLossPer;
-        updateCellValue(rowList.get(KCTAKELOSSDOL.getIndex()), kcTakeLoss$);
+            //Update KC Loss %
+            Double kcProfitPer = (Double) rowList.get(KCPROFITPER.getIndex()).getItem();
+            Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
+            Double kcLossPer = (kcProfitPer) / ((1 / (probOfProfit - kcEdge)) - 1);
+            updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPer);
 
-        //Update KC Net Loss $
-        Double kcNetLoss$ = entry$ - kcTakeLoss$;
-        updateCellValue(rowList.get(KCNETLOSSDOL.getIndex()), kcNetLoss$);
+            //Update KC Take Loss $
+            Double entry$ = (Double) rowList.get(ENTRYDOL.getIndex()).getItem();
+            Double kcTakeLoss$ = entry$ * kcLossPer;
+            updateCellValue(rowList.get(KCTAKELOSSDOL.getIndex()), kcTakeLoss$);
+
+            //Update KC Net Loss $
+            Double kcNetLoss$ = entry$ - kcTakeLoss$;
+            updateCellValue(rowList.get(KCNETLOSSDOL.getIndex()), kcNetLoss$);
+
+        });
     }
 
 }

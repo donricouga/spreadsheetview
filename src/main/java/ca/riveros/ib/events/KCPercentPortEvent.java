@@ -37,21 +37,24 @@ public class KCPercentPortEvent implements ChangeListener<Object> {
         String contractId = rowList.get(CONTRACTID.getIndex()).getText();
         PersistentFields.setValue(account, Integer.valueOf(contractId), KCPERPORT.getIndex(), kcPerPort);
 
-        //Update KC Max Loss
-        Double netLiq = Mediator.INSTANCE.getAccountNetLiq();
-        Double kcMaxLoss = netLiq * kcPerPort;
-        updateCellValue(rowList.get(KCMAXLOSS.getIndex()), kcMaxLoss);
+        Platform.runLater(() -> {
 
-        //Update KC-Qty
-        Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
-        Double entry$ = (Double) rowList.get(ENTRYDOL.getIndex()).getItem();
-        Double kcQty = (kcMaxLoss) / (entry$ * (1 + kcEdge) * - 100);
-        updateCellValue(rowList.get(KCQTY.getIndex()), kcQty);
+            //Update KC Max Loss
+            Double netLiq = Mediator.INSTANCE.getAccountNetLiq();
+            Double kcMaxLoss = netLiq * kcPerPort;
+            updateCellValue(rowList.get(KCMAXLOSS.getIndex()), kcMaxLoss);
 
-        //Update Qty. Open/Close
-        Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
-        updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), kcQty - qty);
+            //Update KC-Qty
+            Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
+            Double entry$ = (Double) rowList.get(ENTRYDOL.getIndex()).getItem();
+            Double kcQty = (kcMaxLoss) / (entry$ * (1 + kcEdge) * -100);
+            updateCellValue(rowList.get(KCQTY.getIndex()), kcQty);
 
+            //Update Qty. Open/Close
+            Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
+            updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), kcQty - qty);
+
+        });
     }
 
 }

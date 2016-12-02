@@ -30,8 +30,12 @@ public class MktDataHandler implements ApiController.IOptHandler {
     //Main BID AND ASK DATA
     private Double bid = 0.0;
     private Double ask = 0.0;
+    private Double delta = 0.0;
+    private Double impliedVol = 0.0;
 
-    /** Contract ID for this Mkt Request **/
+    /**
+     * Contract ID for this Mkt Request
+     **/
     private Contract contract;
 
     public MktDataHandler(Mediator mediator, Logger logger, Contract contract) {
@@ -42,15 +46,19 @@ public class MktDataHandler implements ApiController.IOptHandler {
 
     @Override
     public void tickOptionComputation(TickType tickType, double impliedVol, double delta, double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice) {
+        if (TickType.ASK_OPTION.equals(tickType)) {
+            logger.log("Received " + TickType.ASK_OPTION + " with delta " + delta + " and implied volatility " + impliedVol);
+            this.delta = delta;
+            this.impliedVol = impliedVol;
+        }
     }
 
     @Override
     public void tickPrice(TickType tickType, double price, int canAutoExecute) {
-        if("BID".equals(tickType.name())) {
+        if ("BID".equals(tickType.name())) {
             logger.log("Received BID price at " + price + " for account " + contract.description() + " " + contract.conid());
             bid = price;
-        }
-        else if("ASK".equals(tickType.name())) {
+        } else if ("ASK".equals(tickType.name())) {
             logger.log("Received ASK price at " + price + " for account " + contract.description() + " " + contract.conid());
             ask = price;
         }
@@ -70,7 +78,7 @@ public class MktDataHandler implements ApiController.IOptHandler {
     public void tickSnapshotEnd() {
         ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData = mediator.getSpreadSheetCells();
         spreadSheetData.forEach(obList -> {
-            if((Integer) obList.get(CONTRACTID.getIndex()).getItem() == contract.conid()) {
+            if ((Integer) obList.get(CONTRACTID.getIndex()).getItem() == contract.conid()) {
                 Platform.runLater(() -> {
                     updateCellValue(obList.get(BID.getIndex()), bid);
                     updateCellValue(obList.get(ASK.getIndex()), ask);
@@ -78,13 +86,16 @@ public class MktDataHandler implements ApiController.IOptHandler {
                     logger.log("Setting Mid Price for " + contract.description() + " " + contract.conid() + " to " + mid);
                     SpreadsheetCell midCell = obList.get(MID.getIndex());
                     SpreadsheetCell perPl = obList.get(PERPL.getIndex());
+                    SpreadsheetCell deltaCell = obList.get(DELTA.getIndex());
+                    SpreadsheetCell impVolCell = obList.get(IMPVOLPER.getIndex());
                     Double entry$ = (Double) obList.get(ENTRYDOL.getIndex()).getItem();
                     updateCellValue(midCell, mid);
-                    updateCellValue(perPl,calculatePercentPL(mid, entry$));
+                    updateCellValue(perPl, calculatePercentPL(mid, entry$));
+                    updateCellValue(impVolCell, this.impliedVol);
+                    updateCellValue(deltaCell, this.delta);
 
                     //After all the data is passed in by tws, fire an event to begin calculations of each row.
                     Event.fireEvent((SpreadsheetCellBase) midCell, new Event(twsEndStreamEventType));
-
                 });
             }
         });
@@ -103,6 +114,6 @@ public class MktDataHandler implements ApiController.IOptHandler {
         if (entry$ < 0)
             return (entry$ - mid) / entry$;
         else
-            return  (mid - entry$) / entry$;
+            return (mid - entry$) / entry$;
     }
 }

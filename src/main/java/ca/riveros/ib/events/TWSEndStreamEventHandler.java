@@ -1,6 +1,7 @@
 package ca.riveros.ib.events;
 
 import ca.riveros.ib.Mediator;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -44,10 +45,16 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
 
         //Lets update KC Profit % Since it's the same as Profit %
         kcProfitPercent = (Double) rowList.get(PROFITPER.getIndex()).getItem();
-        updateCellValue(rowList.get(KCPROFITPER.getIndex()), profitPercent);
-        updateCalculatedFields();
+
+        Platform.runLater(() -> {
+
+            updateCellValue(rowList.get(KCPROFITPER.getIndex()), profitPercent);
+            updateCalculatedFields();
+
+        });
     }
 
+    /** Run this in a background UI thread to update fields **/
     private void updateCalculatedFields() {
 
         //Calculate KC Loss %

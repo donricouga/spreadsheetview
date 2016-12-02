@@ -1,6 +1,7 @@
 package ca.riveros.ib.events;
 
 import ca.riveros.ib.data.PersistentFields;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -40,34 +41,38 @@ public class KCEdgeEvent implements ChangeListener<Object> {
         Double kcMaxLoss = (Double) rowList.get(KCMAXLOSS.getIndex()).getItem();
         Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
 
-        //Calculate KC Loss %
-        Double kcProfitPercent = (Double) rowList.get(KCPROFITPER.getIndex()).getItem();
-        Double kcLossPercent = (kcProfitPercent) / ((1/(probProfit - kcEdge))-1);
-        updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPercent);
+        Platform.runLater(() -> {
 
-        //Calculate KC Take Profit $
-        Double kcTakeProfit$ = entry$ * (1 - kcProfitPercent);
-        updateCellValue(rowList.get(KCTAKEPROFITDOL.getIndex()), kcTakeProfit$);
+            //Calculate KC Loss %
+            Double kcProfitPercent = (Double) rowList.get(KCPROFITPER.getIndex()).getItem();
+            Double kcLossPercent = (kcProfitPercent) / ((1 / (probProfit - kcEdge)) - 1);
+            updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPercent);
 
-        //Calculate KC Take Loss $
-        Double kcTakeLoss$ = entry$ * kcLossPercent;
-        updateCellValue(rowList.get(KCTAKELOSSDOL.getIndex()), kcTakeLoss$);
+            //Calculate KC Take Profit $
+            Double kcTakeProfit$ = entry$ * (1 - kcProfitPercent);
+            updateCellValue(rowList.get(KCTAKEPROFITDOL.getIndex()), kcTakeProfit$);
 
-        //Calculate KC Net Profit $
-        Double kcNetProfit$ = entry$ - kcTakeProfit$;
-        updateCellValue(rowList.get(KCNETPROFITDOL.getIndex()), kcNetProfit$);
+            //Calculate KC Take Loss $
+            Double kcTakeLoss$ = entry$ * kcLossPercent;
+            updateCellValue(rowList.get(KCTAKELOSSDOL.getIndex()), kcTakeLoss$);
 
-        //Calculate KC Net Loss $
-        Double kcNetLoss$ = entry$ - kcTakeLoss$;
-        updateCellValue(rowList.get(KCNETLOSSDOL.getIndex()), kcNetLoss$);
+            //Calculate KC Net Profit $
+            Double kcNetProfit$ = entry$ - kcTakeProfit$;
+            updateCellValue(rowList.get(KCNETPROFITDOL.getIndex()), kcNetProfit$);
 
-        //Calculate KC-Qty
-        Double kcQty = (kcMaxLoss) / (entry$ * (1 + kcEdge) * - 100);
-        updateCellValue(rowList.get(KCQTY.getIndex()), kcQty);
+            //Calculate KC Net Loss $
+            Double kcNetLoss$ = entry$ - kcTakeLoss$;
+            updateCellValue(rowList.get(KCNETLOSSDOL.getIndex()), kcNetLoss$);
 
-        //Calculate Qty. Open/Close
-        Double qtyOpenClose = kcQty - qty;
-        updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), qtyOpenClose);
+            //Calculate KC-Qty
+            Double kcQty = (kcMaxLoss) / (entry$ * (1 + kcEdge) * -100);
+            updateCellValue(rowList.get(KCQTY.getIndex()), kcQty);
+
+            //Calculate Qty. Open/Close
+            Double qtyOpenClose = kcQty - qty;
+            updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), qtyOpenClose);
+
+        });
     }
 
 }
