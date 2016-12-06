@@ -133,9 +133,9 @@ public class TwsIbSpreadSheetView extends Application {
         hideUnecessaryColumns();
 
         //set pickers
-        for(int i = 0; i < spreadSheetView.getColumns().size(); i++) {
-            spreadSheetView.getColumnPickers().put(i, new ColumnSortPicker(spreadSheetView, i));
-        }
+//        for(int i = 0; i < spreadSheetView.getColumns().size(); i++) {
+//            spreadSheetView.getColumnPickers().put(i, new ColumnSortPicker(spreadSheetView, i));
+//        }
 
         borderPane.setCenter(spreadSheetView);
 
@@ -306,17 +306,17 @@ public class TwsIbSpreadSheetView extends Application {
             rowsList.add(createCell(counter.intValue(),9,sm.getPercentOfPort(),false, percentFormat));
             rowsList.add(createCell(counter.intValue(),10,sm.getPercentPL(),false, percentFormat));
             rowsList.add(createCell(counter.intValue(),11,getValue(account,sm.getContractId(), MARGIN.getIndex(), 0.0), true, "manualo",
-                    new MarginActionEvent(spreadSheetView.getGrid().getRows(), Double.valueOf(accountNetLiqTextField.getText()))));
+                    new MarginActionEvent(spreadsheetModelObservableList, Double.valueOf(accountNetLiqTextField.getText()))));
             rowsList.add(createCell(counter.intValue(),12,getValue(account, sm.getContractId(), PROBPROFIT.getIndex(), 0.91), true, "manualo",
-                    new ProbabilityOfProfitEvent(spreadSheetView.getGrid().getRows()), percentFormat));
+                    new ProbabilityOfProfitEvent(spreadsheetModelObservableList), percentFormat));
             rowsList.add(createCell(counter.intValue(),13,getValue(account, sm.getContractId(), KCPERPORT.getIndex(), 0.0075), true, "manualy",
-                    new KCPercentPortEvent((spreadSheetView.getGrid().getRows())), percentFormat));
+                    new KCPercentPortEvent((spreadsheetModelObservableList)), percentFormat));
             rowsList.add(createCell(counter.intValue(),14,getValue(account, sm.getContractId(), PROFITPER.getIndex(), 0.57), true, "manualy",
-                    new ProfitPercentageEvent(spreadSheetView.getGrid().getRows()), percentFormat));
+                    new ProfitPercentageEvent(spreadsheetModelObservableList), percentFormat));
             rowsList.add(createCell(counter.intValue(),15,getValue(account, sm.getContractId(), LOSSPER.getIndex(), 2.2), true, "manualy",
-                    new LossPercentageEvent(spreadSheetView.getGrid().getRows()), percentFormat));
+                    new LossPercentageEvent(spreadsheetModelObservableList), percentFormat));
             rowsList.add(createCell(counter.intValue(),16,getValue(account, sm.getContractId(), KCEDGE.getIndex(), 0.1), true, "manualy",
-                    new KCEdgeEvent(spreadSheetView.getGrid().getRows()), percentFormat));
+                    new KCEdgeEvent(spreadsheetModelObservableList), percentFormat));
             rowsList.add(createCell(counter.intValue(),17,getValue(account, sm.getContractId(), PROFITPER.getIndex(), 0.57),false, percentFormat)); //KC Profit percentage
             rowsList.add(createCell(counter.intValue(),18,sm.getKcLossPercentage(),false, percentFormat));
             rowsList.add(createCell(counter.intValue(),19,sm.getKcTakeProfit$(),false, dollarFormat));

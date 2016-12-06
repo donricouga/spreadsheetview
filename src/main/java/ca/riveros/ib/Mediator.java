@@ -64,10 +64,10 @@ public class Mediator extends Application {
      * @param account the TWS Account Code
      */
     public void requestAccountUpdate(String account) {
-        if(accountInfoHandler != null) {
-            outLogger.log("Cancelling subscription for account " + accountInfoHandler.getAccount());
-            connectionHandler.getApiController().reqAccountUpdates(false, accountInfoHandler.getAccount(), accountInfoHandler);
-        }
+//        if(accountInfoHandler != null) {
+//            outLogger.log("Cancelling subscription for account " + accountInfoHandler.getAccount());
+//            connectionHandler.getApiController().reqAccountUpdates(false, accountInfoHandler.getAccount(), accountInfoHandler);
+//        }
 
         //Only one instance of a handler should exist.
         if(accountInfoHandler == null)
