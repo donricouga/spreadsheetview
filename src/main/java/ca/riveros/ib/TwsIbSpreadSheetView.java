@@ -86,10 +86,10 @@ public class TwsIbSpreadSheetView extends Application {
 
     }
 
-    private final List<String> columnData = Arrays.asList("Contract", "Qty", "KC-Qty", "Qty. Open/Close", "Entry $", "Mid",
-            "Market $", "Unreal P/L", "Real P/L", "% of Port", "% P/L", "Margin", "Prob. Profit", "KC % Port", "Profit %", "Loss %",
-            "KC Edge", "KC Profit %", "KC Loss %", "KC Take Profit $", "KC Take Loss $", "KC Net Profit $", "KC Net Loss", "KC Max Loss",
-            "Notional", "Delta", "ImpVol %", "Bid", "Ask", "Contract Id", "Symbol", "Account");
+    private final List<String> columnData = Arrays.asList("Contract", "Qty", "Entry $", "Mid", "Unreal P/L", "Real P/L", "% of Port", "Margin",
+            "Target Profit %", "Target Loss %", "KC Prob. Profit", "KC Edge", "KC Credit Received", "KC Take Profit %", "KC Take Profit $", "KC Net Profit $",
+            "KC Loss Level", "KC Take Loss $", "KC Net Loss $", "KC % Port.", "KC Max Loss", "KC Contract #", "Qty. Open/Close", "Market $", "Notional",
+            "Delta", "ImplVol %", "% P/L", "Bid", "Ask", "Contract ID", "Symbol", "Account");
 
     //@Override
     public String getSampleName() {
