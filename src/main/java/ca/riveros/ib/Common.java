@@ -57,7 +57,7 @@ public class Common {
     }
 
     //KC Contract # (KC - Qty)
-    public Double calcKcContractNum(Double kcMaxLoss, Double kcNetLoss$) {
+    public static Double calcKcContractNum(Double kcMaxLoss, Double kcNetLoss$) {
         if(kcNetLoss$ == 0)
             return 0.0;
         return Math.floor(kcMaxLoss / (kcNetLoss$ * -100));

@@ -11,7 +11,7 @@ public enum TableColumnIndexes {
     MARGIN(7), //editable
     PROFITPER(8),  //editable
     LOSSPER(9), //editable
-    PROBPROFIT(10), //editable
+    KCPROBPROFIT(10), //editable
     KCEDGE(11), //editable
     KCCREDITREC(12), //NEW
     KCTAKEPROFITPER(13), //NEW THIS IS THE OLD KC PROFIT %
@@ -22,7 +22,7 @@ public enum TableColumnIndexes {
     KCNETLOSSDOL(18),
     KCPERPORT(19),  //editable
     KCMAXLOSS(20),
-    KCQTY(21),
+    KCCONTRACTNUM(21),
     QTYOPENCLOSE(22),
     MARKETDOL(23),
     NOTIONAL(24),

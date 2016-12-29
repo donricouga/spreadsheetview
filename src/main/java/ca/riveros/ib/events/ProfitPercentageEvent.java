@@ -25,7 +25,7 @@ public class ProfitPercentageEvent implements ChangeListener<Object> {
 
     @Override
     public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-        ObjectProperty base = (ObjectProperty) observable;
+        /*ObjectProperty base = (ObjectProperty) observable;
         SpreadsheetCell c = (SpreadsheetCell) base.getBean();
         int row = c.getRow();
         ObservableList<SpreadsheetCell> rowList = spreadsheetDataList.get(row);
@@ -37,7 +37,7 @@ public class ProfitPercentageEvent implements ChangeListener<Object> {
         Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
 
         //Let's get all the manual Fields First since they are already there.
-        Double probProfit = (Double) rowList.get(PROBPROFIT.getIndex()).getItem();
+        Double probProfit = (Double) rowList.get(KCPROBPROFIT.getIndex()).getItem();
         Double kcPercentPort = (Double) rowList.get(KCPERPORT.getIndex()).getItem();
         Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
 
@@ -76,12 +76,12 @@ public class ProfitPercentageEvent implements ChangeListener<Object> {
 
             //Calculate KC-Qty
             Double kcQty = (kcMaxLoss) / (entry$ * (1 + kcEdge) * -100);
-            updateCellValue(rowList.get(KCQTY.getIndex()), kcQty);
+            updateCellValue(rowList.get(KCCONTRACTNUM.getIndex()), kcQty);
 
             //Calculate Qty. Open/Close
             updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), kcQty - qty);
 
-        });
+        });*/
     }
 
 }

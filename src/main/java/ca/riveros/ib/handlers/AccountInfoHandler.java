@@ -24,6 +24,7 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
 
     //Reference Data
     private String account;
+    private Integer positionsCount;
 
     private List <SpreadsheetModel>positionsList = new ArrayList<>(30);
 
@@ -50,6 +51,21 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
 
     @Override
     public void accountDownloadEnd(String account) {
+        positionsCount = positionsList.size();
+        updateUi();
+    }
+
+    @Override
+    public void updatePortfolio(Position position) {
+        SpreadsheetModel model = createSpreadsheetModel(position);
+        inLogger.log("Received position " + model.getContract());
+        model.setTwsContract(position.contract());
+        positionsList.add(model);
+        if(positionsCount != null && positionsList.size() == positionsCount)
+            updateUi();
+    }
+
+    private void updateUi() {
         inLogger.log("Finished with account " + account);
         mediator.updateSpreadsheetViewGrid(positionsList);
 
@@ -65,14 +81,6 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
 
         //clear for next call
         positionsList.clear();
-    }
-
-    @Override
-    public void updatePortfolio(Position position) {
-        inLogger.log("Received position " + position.account());
-        SpreadsheetModel model = createSpreadsheetModel(position);
-        model.setTwsContract(position.contract());
-        positionsList.add(model);
     }
 
     private SpreadsheetModel createSpreadsheetModel(Position pos) {

@@ -23,7 +23,7 @@ public class LossPercentageEvent implements ChangeListener<Object> {
 
     @Override
     public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-        ObjectProperty base = (ObjectProperty) observable;
+       /* ObjectProperty base = (ObjectProperty) observable;
         SpreadsheetCell c = (SpreadsheetCell) base.getBean();
         int row = c.getRow();
         ObservableList<SpreadsheetCell> rowList = spreadsheetDataList.get(row);
@@ -32,7 +32,7 @@ public class LossPercentageEvent implements ChangeListener<Object> {
         //Update Persistent File with new Manual Value
         String account = rowList.get(ACCOUNT.getIndex()).getText();
         String contractId = rowList.get(CONTRACTID.getIndex()).getText();
-        PersistentFields.setValue(account, Integer.valueOf(contractId), LOSSPER.getIndex(), lossPercent);
+        PersistentFields.setValue(account, Integer.valueOf(contractId), LOSSPER.getIndex(), lossPercent);*/
     }
 
 }
