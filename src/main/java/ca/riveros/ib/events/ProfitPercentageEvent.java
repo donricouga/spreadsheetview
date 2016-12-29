@@ -47,7 +47,7 @@ public class ProfitPercentageEvent implements ChangeListener<Object> {
             String account = rowList.get(ACCOUNT.getIndex()).getText();
             String contractId = rowList.get(CONTRACTID.getIndex()).getText();
             PersistentFields.setValue(account, Integer.valueOf(contractId), PROFITPER.getIndex(), profitPercent);
-            updateCellValue(rowList.get(KCPROFITPER.getIndex()), profitPercent);
+            updateCellValue(rowList.get(KCTAKEPROFITPER.getIndex()), profitPercent);
 
             //Calculate KC Loss %
             Double kcProfitPercent = profitPercent;

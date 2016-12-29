@@ -7,6 +7,9 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
+import static ca.riveros.ib.Common.calcKCTakeProfit$;
+import static ca.riveros.ib.Common.calcKcLossLevel;
+import static ca.riveros.ib.Common.calcKcNetProfit$;
 import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.*;
 
@@ -26,6 +29,7 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
     private Double profitPercent;
     private Double kcEdge;
     private Double kcProfitPercent;
+    private Double kcTakeProfitPer;
 
     @Override
     public void handle(Event event) {
@@ -42,13 +46,14 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
         kcPercentPort = (Double) rowList.get(KCPERPORT.getIndex()).getItem();
         profitPercent = (Double) rowList.get(PROFITPER.getIndex()).getItem();
         kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
+        kcTakeProfitPer = (Double) rowList.get(KCTAKEPROFITPER.getIndex()).getItem();
 
         //Lets update KC Profit % Since it's the same as Profit %
         kcProfitPercent = (Double) rowList.get(PROFITPER.getIndex()).getItem();
 
         Platform.runLater(() -> {
 
-            updateCellValue(rowList.get(KCPROFITPER.getIndex()), profitPercent);
+            updateCellValue(rowList.get(KCTAKEPROFITPER.getIndex()), profitPercent);
             updateCalculatedFields();
 
         });
@@ -57,20 +62,20 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
     /** Run this in a background UI thread to update fields **/
     private void updateCalculatedFields() {
 
-        //Calculate KC Loss %
-        Double kcLossPercent = (kcProfitPercent) / ((1/(probProfit - kcEdge))-1);
-        updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPercent);
+        //KC Loss %
+        Double kcLossLevel = calcKcLossLevel(kcProfitPercent, probProfit, kcEdge);
+        updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossLevel);
 
         //Calculate KC Take Profit $
-        Double kcTakeProfit$ = entry$ * (1 - kcProfitPercent);
+        Double kcTakeProfit$ = calcKCTakeProfit$(entry$, kcTakeProfitPer);
         updateCellValue(rowList.get(KCTAKEPROFITDOL.getIndex()), kcTakeProfit$);
 
         //Calculate KC Take Loss $
-        Double kcTakeLoss$ = entry$ * kcLossPercent;
-        updateCellValue(rowList.get(KCTAKELOSSDOL.getIndex()), kcTakeLoss$);
+//        Double kcTakeLoss$ = entry$ * kcLossPercent;
+        //updateCellValue(rowList.get(KCTAKELOSSDOL.getIndex()), calcKcTakeLoss$(entry$, kcTakeLoss$));
 
         //Calculate KC Net Profit $
-        Double kcNetProfit$ = entry$ - kcTakeProfit$;
+        Double kcNetProfit$ = calcKcNetProfit$(entry$, kcTakeProfit$);
         updateCellValue(rowList.get(KCNETPROFITDOL.getIndex()), kcNetProfit$);
 
         //Calculate KC Net Loss $

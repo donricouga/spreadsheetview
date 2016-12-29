@@ -44,7 +44,7 @@ public class KCEdgeEvent implements ChangeListener<Object> {
         Platform.runLater(() -> {
 
             //Calculate KC Loss %
-            Double kcProfitPercent = (Double) rowList.get(KCPROFITPER.getIndex()).getItem();
+            Double kcProfitPercent = (Double) rowList.get(KCTAKEPROFITPER.getIndex()).getItem();
             Double kcLossPercent = (kcProfitPercent) / ((1 / (probProfit - kcEdge)) - 1);
             updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPercent);
 

@@ -38,7 +38,7 @@ public class ProbabilityOfProfitEvent implements ChangeListener<Object> {
         Platform.runLater(() -> {
 
             //Update KC Loss %
-            Double kcProfitPer = (Double) rowList.get(KCPROFITPER.getIndex()).getItem();
+            Double kcProfitPer = (Double) rowList.get(KCTAKEPROFITPER.getIndex()).getItem();
             Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
             Double kcLossPer = (kcProfitPer) / ((1 / (probOfProfit - kcEdge)) - 1);
             updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPer);
