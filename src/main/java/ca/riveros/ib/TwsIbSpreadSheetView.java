@@ -2,6 +2,9 @@ package ca.riveros.ib;
 
 import ca.riveros.ib.events.*;
 import ca.riveros.ib.model.SpreadsheetModel;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -18,6 +21,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.controlsfx.control.spreadsheet.*;
 
 import java.util.*;
@@ -293,11 +297,16 @@ public class TwsIbSpreadSheetView extends Application {
             rowsList.add(mid);
             SpreadsheetCell unrealPNLCell = createCell(counter.intValue(),4,sm.getUnrealPL(),false, dollarFormat);
             if(sm.getUnrealPL() > 0)
-                unrealPNLCell.getStyleClass().add("positive");
+                setFlashingAnimation(unrealPNLCell,"8ED566");
             else
-                unrealPNLCell.getStyleClass().add("negative");
+                setFlashingAnimation(unrealPNLCell,"CB5A5A");
             rowsList.add(unrealPNLCell);
-            rowsList.add(createCell(counter.intValue(),5,sm.getRealPL(),false, dollarFormat));
+            SpreadsheetCell realPNLCell = createCell(counter.intValue(),5,sm.getRealPL(),false, dollarFormat);
+            if(sm.getRealPL() > 0)
+                setFlashingAnimation(realPNLCell,"8ED566");
+            else if(sm.getRealPL() < 0)
+                setFlashingAnimation(realPNLCell,"CB5A5A");
+            rowsList.add(realPNLCell);
             rowsList.add(createCell(counter.intValue(),6,sm.getPercentOfPort(),false, percentFormat));
             rowsList.add(createCell(counter.intValue(),7,getValue(account,sm.getContractId(), MARGIN.getIndex(), 0.0), true, "manualy",
                     new MarginActionEvent(spreadsheetModelObservableList, Double.valueOf(accountNetLiqTextField.getText()))));
@@ -339,5 +348,22 @@ public class TwsIbSpreadSheetView extends Application {
         //set grid and display
         g.setRows(spreadsheetModelObservableList);
         spreadSheetView.setGrid(g);
+    }
+
+    private void setFlashingAnimation(SpreadsheetCell cell, String color) {
+        Timeline flasher = new Timeline(
+
+                new KeyFrame(Duration.seconds(0.5), e -> {
+                    //flashingNode.pseudoClassStateChanged(flashHighlight, true);
+                    cell.setStyle("-fx-background-color: #" + color);
+                }),
+
+                new KeyFrame(Duration.seconds(1.0), e -> {
+                    //flashingNode.pseudoClassStateChanged(flashHighlight, false);
+                    cell.setStyle("-fx-background-color: white");
+                })
+        );
+        flasher.setCycleCount(Animation.INDEFINITE);
+        flasher.play();
     }
 }
