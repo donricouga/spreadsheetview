@@ -7,9 +7,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.scene.media.Media;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
+import static ca.riveros.ib.Common.calcKcContractNum;
+import static ca.riveros.ib.Common.calcKcMaxLoss;
+import static ca.riveros.ib.Common.calcQtyOpenClose;
 import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.*;
 
@@ -37,22 +39,24 @@ public class KCPercentPortEvent implements ChangeListener<Object> {
         String contractId = rowList.get(CONTRACTID.getIndex()).getText();
         PersistentFields.setValue(account, Integer.valueOf(contractId), KCPERPORT.getIndex(), kcPerPort);
 
+        //Get needed fields
+        Double kcNetLoss$ = (Double) rowList.get(KCNETLOSSDOL.getIndex()).getItem();
+        Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
+        Double netLiq = Mediator.INSTANCE.getAccountNetLiq();
+
         Platform.runLater(() -> {
 
             //Update KC Max Loss
-            Double netLiq = Mediator.INSTANCE.getAccountNetLiq();
-            Double kcMaxLoss = netLiq * kcPerPort;
+            Double kcMaxLoss = calcKcMaxLoss(netLiq, kcPerPort);
             updateCellValue(rowList.get(KCMAXLOSS.getIndex()), kcMaxLoss);
 
-            //Update KC-Qty
-            Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
-            Double entry$ = (Double) rowList.get(ENTRYDOL.getIndex()).getItem();
-            Double kcQty = (kcMaxLoss) / (entry$ * (1 + kcEdge) * -100);
-            updateCellValue(rowList.get(KCQTY.getIndex()), kcQty);
+            //Calculate KC Contract # (KC-Qty)
+            Double kcContractNum = calcKcContractNum(kcMaxLoss, kcNetLoss$);
+            updateCellValue(rowList.get(KCCONTRACTNUM.getIndex()), kcContractNum);
 
-            //Update Qty. Open/Close
-            Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
-            updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), kcQty - qty);
+            //Calculate Qty. Open/Close
+            Double qtyOpenClose = calcQtyOpenClose(kcContractNum, qty);
+            updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), qtyOpenClose);
 
         });
     }

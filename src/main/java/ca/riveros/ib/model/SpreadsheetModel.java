@@ -7,7 +7,7 @@ public class SpreadsheetModel {
 
     private StringProperty contract = new SimpleStringProperty();
     private DoubleProperty qty = new SimpleDoubleProperty();
-    private DoubleProperty kcQty = new SimpleDoubleProperty();
+    private DoubleProperty kcContractNum = new SimpleDoubleProperty();
     private DoubleProperty qtyOpenClose = new SimpleDoubleProperty();
     private DoubleProperty entry$ = new SimpleDoubleProperty();
     private DoubleProperty mid = new SimpleDoubleProperty();
@@ -23,7 +23,7 @@ public class SpreadsheetModel {
     private DoubleProperty lossPercentage = new SimpleDoubleProperty();
     private DoubleProperty kcEdge = new SimpleDoubleProperty();
     private DoubleProperty kcProfitPercentage = new SimpleDoubleProperty();
-    private DoubleProperty kcLossPercentage = new SimpleDoubleProperty();
+    private DoubleProperty kcLossLevel = new SimpleDoubleProperty();
     private DoubleProperty kcTakeProfit$ = new SimpleDoubleProperty();
     private DoubleProperty kcTakeLoss$ = new SimpleDoubleProperty();
     private DoubleProperty kcNetProfit$ = new SimpleDoubleProperty();
@@ -64,16 +64,16 @@ public class SpreadsheetModel {
         this.qty.set(qty);
     }
 
-    public Double getKcQty() {
-        return kcQty.get();
+    public Double getKcContractNum() {
+        return kcContractNum.get();
     }
 
-    public Double kcQtyProperty() {
-        return kcQty.getValue();
+    public Double kcContractNumProperty() {
+        return kcContractNum.getValue();
     }
 
-    public void setKcQty(Double kcQty) {
-        this.kcQty.set(kcQty);
+    public void setKcContractNum(Double kcContractNum) {
+        this.kcContractNum.set(kcContractNum);
     }
 
     public Double getQtyOpenClose() {
@@ -256,16 +256,16 @@ public class SpreadsheetModel {
         this.kcProfitPercentage.set(kcProfitPercentage);
     }
 
-    public Double getKcLossPercentage() {
-        return kcLossPercentage.get();
+    public Double getKcLossLevel() {
+        return kcLossLevel.get();
     }
 
-    public Double kcLossPercentageProperty() {
-        return kcLossPercentage.get();
+    public Double kcLossLevelProperty() {
+        return kcLossLevel.get();
     }
 
-    public void setKcLossPercentage(Double kcLossPercentage) {
-        this.kcLossPercentage.set(kcLossPercentage);
+    public void setKcLossLevel(Double kcLossLevel) {
+        this.kcLossLevel.set(kcLossLevel);
     }
 
     public Double getKcTakeProfit$() {

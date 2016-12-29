@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Mediator extends Application {
 
@@ -64,14 +66,22 @@ public class Mediator extends Application {
      * @param account the TWS Account Code
      */
     public void requestAccountUpdate(String account) {
-//        if(accountInfoHandler != null) {
-//            outLogger.log("Cancelling subscription for account " + accountInfoHandler.getAccount());
-//            connectionHandler.getApiController().reqAccountUpdates(false, accountInfoHandler.getAccount(), accountInfoHandler);
-//        }
 
         //Only one instance of a handler should exist.
         if(accountInfoHandler == null)
             accountInfoHandler = new AccountInfoHandler(this, account, inLogger);
+
+        /*new Timer().schedule(
+                new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        System.out.println("CALLING REQUEST ACCOUNT UPDATES");
+                        connectionHandler.getApiController().reqAccountUpdates(false, account, accountInfoHandler);
+                        connectionHandler.getApiController().reqAccountUpdates(true, account, accountInfoHandler);
+                    }
+                }, 0, 150000); //150,000 ms*/
+
         connectionHandler.getApiController().reqAccountUpdates(true, account, accountInfoHandler);
     }
 

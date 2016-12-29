@@ -5,14 +5,12 @@ import ca.riveros.ib.events.KCEdgeEvent;
 import ca.riveros.ib.events.KCPercentPortEvent;
 import ca.riveros.ib.events.LossPercentageEvent;
 import ca.riveros.ib.events.MarginActionEvent;
-import ca.riveros.ib.events.ProbabilityOfProfitEvent;
+import ca.riveros.ib.events.KCProbabilityOfProfitEvent;
 import ca.riveros.ib.events.ProfitPercentageEvent;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.Grid;
-import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.Picker;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
@@ -22,7 +20,7 @@ import static ca.riveros.ib.TableColumnIndexes.KCEDGE;
 import static ca.riveros.ib.TableColumnIndexes.KCPERPORT;
 import static ca.riveros.ib.TableColumnIndexes.LOSSPER;
 import static ca.riveros.ib.TableColumnIndexes.MARGIN;
-import static ca.riveros.ib.TableColumnIndexes.PROBPROFIT;
+import static ca.riveros.ib.TableColumnIndexes.KCPROBPROFIT;
 import static ca.riveros.ib.TableColumnIndexes.PROFITPER;
 
 /**
@@ -90,8 +88,8 @@ public class ColumnSortPicker extends Picker {
         ObjectProperty<Object> itemProperty = newCell.itemProperty();
         if(col == MARGIN.getIndex())
             itemProperty.addListener(new MarginActionEvent(spreadsheetModelObservableList, Mediator.INSTANCE.getAccountNetLiq()));
-        else if(col == PROBPROFIT.getIndex())
-            itemProperty.addListener(new ProbabilityOfProfitEvent(spreadsheetModelObservableList));
+        else if(col == KCPROBPROFIT.getIndex())
+            itemProperty.addListener(new KCProbabilityOfProfitEvent(spreadsheetModelObservableList));
         else if(col == KCPERPORT.getIndex())
             itemProperty.addListener(new KCPercentPortEvent(spreadsheetModelObservableList));
         else if(col == PROFITPER.getIndex())

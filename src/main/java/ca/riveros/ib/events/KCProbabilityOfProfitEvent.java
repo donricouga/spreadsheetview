@@ -18,11 +18,11 @@ import static ca.riveros.ib.TableColumnIndexes.*;
 /**
  * Created by admin on 11/24/16.
  */
-public class KCEdgeEvent implements ChangeListener<Object> {
+public class KCProbabilityOfProfitEvent implements ChangeListener<Object> {
 
     private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList;
 
-    public KCEdgeEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList) {
+    public KCProbabilityOfProfitEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList) {
         this.spreadsheetDataList = spreadsheetDataList;
     }
 
@@ -32,24 +32,25 @@ public class KCEdgeEvent implements ChangeListener<Object> {
         SpreadsheetCell c = (SpreadsheetCell) base.getBean();
         int row = c.getRow();
         ObservableList<SpreadsheetCell> rowList = spreadsheetDataList.get(row);
-        Double kcEdge = (Double) newValue;
+        Double kcProbOfProfit = (Double) newValue;
 
         //Update Persistent File with new Manual Value
         String account = rowList.get(ACCOUNT.getIndex()).getText();
         String contractId = rowList.get(CONTRACTID.getIndex()).getText();
-        PersistentFields.setValue(account, Integer.valueOf(contractId), KCEDGE.getIndex(), kcEdge);
+        PersistentFields.setValue(account, Integer.valueOf(contractId), KCPROBPROFIT.getIndex(), kcProbOfProfit);
 
         //Get needed fields
-        Double kcProbProfit = (Double) rowList.get(KCPROBPROFIT.getIndex()).getItem();
         Double entry$ = (Double) rowList.get(ENTRYDOL.getIndex()).getItem();
         Double kcMaxLoss = (Double) rowList.get(KCMAXLOSS.getIndex()).getItem();
         Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
+        Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
+        Double kcTakeProfitPer = (Double) rowList.get(KCTAKEPROFITPER.getIndex()).getItem();
+
 
         Platform.runLater(() -> {
 
             //Calculate KC Loss Level
-            Double kcTakeProfitPer = (Double) rowList.get(KCTAKEPROFITPER.getIndex()).getItem();
-            Double kcLossLevel = calcKcLossLevel(kcTakeProfitPer, kcProbProfit, kcEdge);
+            Double kcLossLevel = calcKcLossLevel(kcTakeProfitPer, kcProbOfProfit, kcEdge);
             updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossLevel);
 
             //Calculate KC Take Loss $

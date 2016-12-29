@@ -7,7 +7,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
-import static ca.riveros.ib.Common.updateCellValue;
+import static ca.riveros.ib.Common.*;
 import static ca.riveros.ib.TableColumnIndexes.*;
 
 /**
@@ -25,7 +25,7 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
     private Double kcPercentPort;
     private Double profitPercent;
     private Double kcEdge;
-    private Double kcProfitPercent;
+    private Double kcTakeProfitPer;
 
     @Override
     public void handle(Event event) {
@@ -38,55 +38,49 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
         qty = (Double) rowList.get(QTY.getIndex()).getItem();
 
         //Let's get all the manual Fields First since they are already there.
-        probProfit = (Double) rowList.get(PROBPROFIT.getIndex()).getItem();
+        probProfit = (Double) rowList.get(KCPROBPROFIT.getIndex()).getItem();
         kcPercentPort = (Double) rowList.get(KCPERPORT.getIndex()).getItem();
         profitPercent = (Double) rowList.get(PROFITPER.getIndex()).getItem();
         kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
+        kcTakeProfitPer = (Double) rowList.get(KCTAKEPROFITPER.getIndex()).getItem();
 
-        //Lets update KC Profit % Since it's the same as Profit %
-        kcProfitPercent = (Double) rowList.get(PROFITPER.getIndex()).getItem();
-
-        Platform.runLater(() -> {
-
-            updateCellValue(rowList.get(KCPROFITPER.getIndex()), profitPercent);
-            updateCalculatedFields();
-
-        });
+        Platform.runLater(() -> updateCalculatedFields());
     }
 
     /** Run this in a background UI thread to update fields **/
     private void updateCalculatedFields() {
 
-        //Calculate KC Loss %
-        Double kcLossPercent = (kcProfitPercent) / ((1/(probProfit - kcEdge))-1);
-        updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPercent);
-
         //Calculate KC Take Profit $
-        Double kcTakeProfit$ = entry$ * (1 - kcProfitPercent);
+        Double kcTakeProfit$ = calcKCTakeProfit$(entry$, kcTakeProfitPer);
         updateCellValue(rowList.get(KCTAKEPROFITDOL.getIndex()), kcTakeProfit$);
 
-        //Calculate KC Take Loss $
-        Double kcTakeLoss$ = entry$ * kcLossPercent;
-        updateCellValue(rowList.get(KCTAKELOSSDOL.getIndex()), kcTakeLoss$);
-
         //Calculate KC Net Profit $
-        Double kcNetProfit$ = entry$ - kcTakeProfit$;
+        Double kcNetProfit$ = calcKcNetProfit$(entry$, kcTakeProfit$);
         updateCellValue(rowList.get(KCNETPROFITDOL.getIndex()), kcNetProfit$);
 
+        //KC Loss %
+        Double kcLossLevel = calcKcLossLevel(kcTakeProfitPer, probProfit, kcEdge);
+        updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossLevel);
+
+        //Calculate KC Take Loss $
+        Double kcTakeLoss$ = calcKcTakeLoss$(entry$, kcLossLevel);
+        updateCellValue(rowList.get(KCTAKELOSSDOL.getIndex()),kcTakeLoss$);
+
         //Calculate KC Net Loss $
-        Double kcNetLoss$ = entry$ - kcTakeLoss$;
+        Double kcNetLoss$ = calcKcNetLoss$(entry$, kcTakeLoss$);
         updateCellValue(rowList.get(KCNETLOSSDOL.getIndex()), kcNetLoss$);
 
         //Calculate KC Max Loss
-        Double kcMaxLoss = netLiq * kcPercentPort;
+        Double kcMaxLoss = calcKcMaxLoss(netLiq, kcPercentPort);
         updateCellValue(rowList.get(KCMAXLOSS.getIndex()), kcMaxLoss);
 
-        //Calculate KC-Qty
-        Double kcQty = (kcMaxLoss) / (entry$ * (1 + kcEdge) * - 100);
-        updateCellValue(rowList.get(KCQTY.getIndex()), kcQty);
+        //Calculate KC Contract# (KC-Qty)
+        Double kcContractNum = calcKcContractNum(kcMaxLoss, kcNetLoss$);
+        updateCellValue(rowList.get(KCCONTRACTNUM.getIndex()), kcContractNum);
 
         //Calculate Qty. Open/Close
-        updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), kcQty - qty);
+        Double qtyOpenClose = calcQtyOpenClose(kcContractNum, qty);
+        updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), qtyOpenClose);
     }
 
 

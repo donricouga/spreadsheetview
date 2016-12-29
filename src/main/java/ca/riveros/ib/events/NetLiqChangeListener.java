@@ -43,7 +43,7 @@ public class NetLiqChangeListener implements ChangeListener<String> {
                 Double kcEdge = (Double) row.get(KCEDGE.getIndex()).getItem();
                 Double entry$ = (Double) row.get(ENTRYDOL.getIndex()).getItem();
                 Double kcQty = (kcMaxLoss) / (entry$ * (1 + kcEdge) * -100);
-                updateCellValue(row.get(KCQTY.getIndex()), kcQty);
+                updateCellValue(row.get(KCCONTRACTNUM.getIndex()), kcQty);
 
                 //Update Qty. Open/Close
                 Double qty = (Double) row.get(QTY.getIndex()).getItem();

@@ -3,36 +3,37 @@ package ca.riveros.ib;
 public enum TableColumnIndexes {
     CONTRACT(0),
     QTY(1),
-    KCQTY(2),
-    QTYOPENCLOSE(3),
-    ENTRYDOL(4),
-    MID(5), //CHANGE NUMBERS
-    MARKETDOL(6),
-    UNREALPNL(7),
-    REALPNL(8),
-    PEROFPORT(9),
-    PERPL(10),
-    MARGIN(11), //editable
-    PROBPROFIT(12), //editable
-    KCPERPORT(13),  //editable
-    PROFITPER(14),  //editable
-    LOSSPER(15), //editable
-    KCEDGE(16), //editable
-    KCPROFITPER(17),
-    KCLOSSPER(18),
-    KCTAKEPROFITDOL(19),
-    KCTAKELOSSDOL(20),
-    KCNETPROFITDOL(21),
-    KCNETLOSSDOL(22),
-    KCMAXLOSS(23),
+    ENTRYDOL(2),
+    MID(3), //CHANGE NUMBERS
+    UNREALPNL(4),
+    REALPNL(5),
+    PEROFPORT(6),
+    MARGIN(7), //editable
+    PROFITPER(8),  //editable
+    LOSSPER(9), //editable
+    KCPROBPROFIT(10), //editable
+    KCEDGE(11), //editable
+    KCCREDITREC(12), //NEW
+    KCTAKEPROFITPER(13), //NEW THIS IS THE OLD KC PROFIT %
+    KCTAKEPROFITDOL(14),
+    KCNETPROFITDOL(15),
+    KCLOSSPER(16),
+    KCTAKELOSSDOL(17),
+    KCNETLOSSDOL(18),
+    KCPERPORT(19),  //editable
+    KCMAXLOSS(20),
+    KCCONTRACTNUM(21),
+    QTYOPENCLOSE(22),
+    MARKETDOL(23),
     NOTIONAL(24),
     DELTA(25),
     IMPVOLPER(26),
-    BID(27),  //Hide This Column
-    ASK(28),  //Hide This Column
-    CONTRACTID(29), //Hide This Column
-    SYMBOL(30), //Hide this Column
-    ACCOUNT(31); //Hide this Column
+    PERPL(27),
+    BID(28),  //Hide This Column
+    ASK(29),  //Hide This Column
+    CONTRACTID(30), //Hide This Column
+    SYMBOL(31), //Hide this Column
+    ACCOUNT(32); //Hide this Column
 
     private int index;
 
