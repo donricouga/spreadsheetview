@@ -5,411 +5,411 @@ import javafx.beans.property.*;
 
 public class SpreadsheetModel {
 
-    private StringProperty contract = new SimpleStringProperty();
-    private DoubleProperty qty = new SimpleDoubleProperty();
-    private DoubleProperty kcContractNum = new SimpleDoubleProperty();
-    private DoubleProperty qtyOpenClose = new SimpleDoubleProperty();
-    private DoubleProperty entry$ = new SimpleDoubleProperty();
-    private DoubleProperty mid = new SimpleDoubleProperty();
-    private DoubleProperty market$ = new SimpleDoubleProperty();
-    private DoubleProperty unrealPL = new SimpleDoubleProperty();
-    private DoubleProperty realPL = new SimpleDoubleProperty();
-    private DoubleProperty percentOfPort = new SimpleDoubleProperty();
-    private DoubleProperty percentPL = new SimpleDoubleProperty();
-    private DoubleProperty margin = new SimpleDoubleProperty();
-    private DoubleProperty probOfProfit = new SimpleDoubleProperty();
-    private DoubleProperty kcPercentagePort = new SimpleDoubleProperty();
-    private DoubleProperty profitPercentage = new SimpleDoubleProperty();
-    private DoubleProperty lossPercentage = new SimpleDoubleProperty();
-    private DoubleProperty kcEdge = new SimpleDoubleProperty();
-    private DoubleProperty kcProfitPercentage = new SimpleDoubleProperty();
-    private DoubleProperty kcLossLevel = new SimpleDoubleProperty();
-    private DoubleProperty kcTakeProfit$ = new SimpleDoubleProperty();
-    private DoubleProperty kcTakeLoss$ = new SimpleDoubleProperty();
-    private DoubleProperty kcNetProfit$ = new SimpleDoubleProperty();
-    private DoubleProperty kcNetLoss$ = new SimpleDoubleProperty();
-    private DoubleProperty kcMaxLoss = new SimpleDoubleProperty();
-    private DoubleProperty notional = new SimpleDoubleProperty();
-    private DoubleProperty delta = new SimpleDoubleProperty();
-    private DoubleProperty impVolPercentage = new SimpleDoubleProperty();
-    private DoubleProperty bid = new SimpleDoubleProperty();
-    private DoubleProperty ask = new SimpleDoubleProperty();
-    private IntegerProperty contractId = new SimpleIntegerProperty();
-    private StringProperty symbol = new SimpleStringProperty();
-    private StringProperty account = new SimpleStringProperty();
+    private String contract;
+    private Double qty;
+    private Double kcContractNum;
+    private Double qtyOpenClose;
+    private Double entry$;
+    private Double mid;
+    private Double market$;
+    private Double unrealPL;
+    private Double realPL;
+    private Double percentOfPort;
+    private Double percentPL;
+    private Double margin;
+    private Double probOfProfit;
+    private Double kcPercentagePort;
+    private Double profitPercentage;
+    private Double lossPercentage;
+    private Double kcEdge;
+    private Double kcProfitPercentage;
+    private Double kcLossLevel;
+    private Double kcTakeProfit$;
+    private Double kcTakeLoss$;
+    private Double kcNetProfit$;
+    private Double kcNetLoss$;
+    private Double kcMaxLoss;
+    private Double notional;
+    private Double delta;
+    private Double impVolPercentage;
+    private Double bid;
+    private Double ask;
+    private Integer contractId;
+    private String symbol;
+    private String account;
 
     private Contract twsContract;
 
     public String getContract() {
-        return contract.get();
+        return contract;
     }
 
     public String contractProperty() {
-        return contract.get();
+        return contract;
     }
 
     public void setContract(String contract) {
-        this.contract.set(contract);
+        this.contract = contract;
     }
 
     public Double getQty() {
-        return qty.get();
+        return qty;
     }
 
     public Double qtyProperty() {
-        return qty.getValue();
+        return qty;
     }
 
     public void setQty(Double qty) {
-        this.qty.set(qty);
+        this.qty = qty;
     }
 
     public Double getKcContractNum() {
-        return kcContractNum.get();
+        return kcContractNum;
     }
 
     public Double kcContractNumProperty() {
-        return kcContractNum.getValue();
+        return kcContractNum;
     }
 
     public void setKcContractNum(Double kcContractNum) {
-        this.kcContractNum.set(kcContractNum);
+        this.kcContractNum = kcContractNum;
     }
 
     public Double getQtyOpenClose() {
-        return qtyOpenClose.get();
+        return qtyOpenClose;
     }
 
     public Double qtyOpenCloseProperty() {
-        return qtyOpenClose.getValue();
+        return qtyOpenClose;
     }
 
     public void setQtyOpenClose(Double qtyOpenClose) {
-        this.qtyOpenClose.set(qtyOpenClose);
+        this.qtyOpenClose = qtyOpenClose;
     }
 
     public Double getEntry$() {
-        return entry$.get();
+        return entry$;
     }
 
     public Double entry$Property() {
-        return entry$.getValue();
+        return entry$;
     }
 
     public void setEntry$(Double entry$) {
-        this.entry$.set(entry$);
+        this.entry$ = entry$;
     }
 
     public Double getMid() {
-        return mid.get();
+        return mid;
     }
 
     public Double midProperty() {
-        return mid.get();
+        return mid;
     }
 
     public void setMid(Double mid) {
-        this.mid.set(mid);
+        this.mid = mid;
     }
 
     public Double getMarket$() {
-        return market$.get();
+        return market$;
     }
 
     public Double market$Property() {
-        return market$.get();
+        return market$;
     }
 
     public void setMarket$(Double market$) {
-        this.market$.set(market$);
+        this.market$ = market$;
     }
 
     public Double getUnrealPL() {
-        return unrealPL.get();
+        return unrealPL;
     }
 
     public Double unrealPLProperty() {
-        return unrealPL.get();
+        return unrealPL;
     }
 
     public void setUnrealPL(Double unrealPL) {
-        this.unrealPL.set(unrealPL);
+        this.unrealPL = unrealPL;
     }
 
     public Double getRealPL() {
-        return realPL.get();
+        return realPL;
     }
 
     public Double realPLProperty() {
-        return realPL.get();
+        return realPL;
     }
 
     public void setRealPL(Double realPL) {
-        this.realPL.set(realPL);
+        this.realPL = realPL;
     }
 
     public Double getPercentOfPort() {
-        return percentOfPort.get();
+        return percentOfPort;
     }
 
     public Double percentOfPortProperty() {
-        return percentOfPort.get();
+        return percentOfPort;
     }
 
     public void setPercentOfPort(Double percentOfPort) {
-        this.percentOfPort.set(percentOfPort);
+        this.percentOfPort = percentOfPort;
     }
 
     public Double getPercentPL() {
-        return percentPL.get();
+        return percentPL;
     }
 
     public Double percentPLProperty() {
-        return percentPL.get();
+        return percentPL;
     }
 
     public void setPercentPL(Double percentPL) {
-        this.percentPL.set(percentPL);
+        this.percentPL = percentPL;
     }
 
     public Double getMargin() {
-        return margin.get();
+        return margin;
     }
 
     public Double marginProperty() {
-        return margin.get();
+        return margin;
     }
 
     public void setMargin(Double margin) {
-        this.margin.set(margin);
+        this.margin = margin;
     }
 
     public Double getProbOfProfit() {
-        return probOfProfit.get();
+        return probOfProfit;
     }
 
     public Double probOfProfitProperty() {
-        return probOfProfit.get();
+        return probOfProfit;
     }
 
     public void setProbOfProfit(Double probOfProfit) {
-        this.probOfProfit.set(probOfProfit);
+        this.probOfProfit = probOfProfit;
     }
 
     public Double getKcPercentagePort() {
-        return kcPercentagePort.get();
+        return kcPercentagePort;
     }
 
     public Double kcPercentagePortProperty() {
-        return kcPercentagePort.get();
+        return kcPercentagePort;
     }
 
     public void setKcPercentagePort(Double kcPercentagePort) {
-        this.kcPercentagePort.set(kcPercentagePort);
+        this.kcPercentagePort = kcPercentagePort;
     }
 
     public Double getProfitPercentage() {
-        return profitPercentage.get();
+        return profitPercentage;
     }
 
     public Double profitPercentageProperty() {
-        return profitPercentage.get();
+        return profitPercentage;
     }
 
     public void setProfitPercentage(Double profitPercentage) {
-        this.profitPercentage.set(profitPercentage);
+        this.profitPercentage = profitPercentage;
     }
 
     public Double getLossPercentage() {
-        return lossPercentage.get();
+        return lossPercentage;
     }
 
     public Double lossPercentageProperty() {
-        return lossPercentage.get();
+        return lossPercentage;
     }
 
     public void setLossPercentage(Double lossPercentage) {
-        this.lossPercentage.set(lossPercentage);
+        this.lossPercentage = lossPercentage;
     }
 
     public Double getKcEdge() {
-        return kcEdge.get();
+        return kcEdge;
     }
 
     public Double kcEdgeProperty() {
-        return kcEdge.get();
+        return kcEdge;
     }
 
     public void setKcEdge(Double kcEdge) {
-        this.kcEdge.set(kcEdge);
+        this.kcEdge = kcEdge;
     }
 
     public Double getKcProfitPercentage() {
-        return kcProfitPercentage.get();
+        return kcProfitPercentage;
     }
 
     public Double kcProfitPercentageProperty() {
-        return kcProfitPercentage.get();
+        return kcProfitPercentage;
     }
 
     public void setKcProfitPercentage(Double kcProfitPercentage) {
-        this.kcProfitPercentage.set(kcProfitPercentage);
+        this.kcProfitPercentage = kcProfitPercentage;
     }
 
     public Double getKcLossLevel() {
-        return kcLossLevel.get();
+        return kcLossLevel;
     }
 
     public Double kcLossLevelProperty() {
-        return kcLossLevel.get();
+        return kcLossLevel;
     }
 
     public void setKcLossLevel(Double kcLossLevel) {
-        this.kcLossLevel.set(kcLossLevel);
+        this.kcLossLevel = kcLossLevel;
     }
 
     public Double getKcTakeProfit$() {
-        return kcTakeProfit$.get();
+        return kcTakeProfit$;
     }
 
     public Double kcTakeProfit$Property() {
-        return kcTakeProfit$.get();
+        return kcTakeProfit$;
     }
 
     public void setKcTakeProfit$(Double kcTakeProfit$) {
-        this.kcTakeProfit$.set(kcTakeProfit$);
+        this.kcTakeProfit$ = kcTakeProfit$;
     }
 
     public Double getKcTakeLoss$() {
-        return kcTakeLoss$.get();
+        return kcTakeLoss$;
     }
 
     public Double kcTakeLoss$Property() {
-        return kcTakeLoss$.get();
+        return kcTakeLoss$;
     }
 
     public void setKcTakeLoss$(Double kcTakeLoss$) {
-        this.kcTakeLoss$.set(kcTakeLoss$);
+        this.kcTakeLoss$ = kcTakeLoss$;
     }
 
     public Double getKcNetProfit$() {
-        return kcNetProfit$.get();
+        return kcNetProfit$;
     }
 
     public Double kcNetProfit$Property() {
-        return kcNetProfit$.get();
+        return kcNetProfit$;
     }
 
     public void setKcNetProfit$(Double kcNetProfit$) {
-        this.kcNetProfit$.set(kcNetProfit$);
+        this.kcNetProfit$ = kcNetProfit$;
     }
 
     public Double getKcNetLoss$() {
-        return kcNetLoss$.get();
+        return kcNetLoss$;
     }
 
     public Double kcNetLoss$Property() {
-        return kcNetLoss$.get();
+        return kcNetLoss$;
     }
 
     public void setKcNetLoss$(Double kcNetLoss$) {
-        this.kcNetLoss$.set(kcNetLoss$);
+        this.kcNetLoss$ = kcNetLoss$;
     }
 
     public Double getKcMaxLoss() {
-        return kcMaxLoss.get();
+        return kcMaxLoss;
     }
 
     public Double kcMaxLossProperty() {
-        return kcMaxLoss.get();
+        return kcMaxLoss;
     }
 
     public void setKcMaxLoss(Double kcMaxLoss) {
-        this.kcMaxLoss.set(kcMaxLoss);
+        this.kcMaxLoss = kcMaxLoss;
     }
 
     public Double getNotional() {
-        return notional.get();
+        return notional;
     }
 
     public Double notionalProperty() {
-        return notional.get();
+        return notional;
     }
 
     public void setNotional(Double notional) {
-        this.notional.set(notional);
+        this.notional = notional;
     }
 
     public Double getDelta() {
-        return delta.get();
+        return delta;
     }
 
     public Double deltaProperty() {
-        return delta.get();
+        return delta;
     }
 
     public void setDelta(Double delta) {
-        this.delta.set(delta);
+        this.delta = delta;
     }
 
     public Double getImpVolPercentage() {
-        return impVolPercentage.get();
+        return impVolPercentage;
     }
 
     public Double impVolPercentageProperty() {
-        return impVolPercentage.get();
+        return impVolPercentage;
     }
 
     public void setImpVolPercentage(Double impVolPercentage) {
-        this.impVolPercentage.set(impVolPercentage);
+        this.impVolPercentage = impVolPercentage;
     }
 
     public Double getBid() {
-        return bid.get();
+        return bid;
     }
 
     public Double bidProperty() {
-        return bid.get();
+        return bid;
     }
 
     public void setBid(Double bid) {
-        this.bid.set(bid);
+        this.bid = bid;
     }
 
     public Double getAsk() {
-        return ask.get();
+        return ask;
     }
 
     public Double askProperty() {
-        return ask.get();
+        return ask;
     }
 
     public void setAsk(Double ask) {
-        this.ask.set(ask);
+        this.ask = ask;
     }
 
     public int getContractId() {
-        return contractId.get();
+        return contractId;
     }
 
     public Integer contractIdProperty() {
-        return contractId.get();
+        return contractId;
     }
 
     public void setContractId(int contractId) {
-        this.contractId.set(contractId);
+        this.contractId = contractId;
     }
 
     public String getSymbol() {
-        return symbol.get();
+        return symbol;
     }
 
-    public StringProperty symbolProperty() {
+    public String symbolProperty() {
         return symbol;
     }
 
     public void setSymbol(String symbol) {
-        this.symbol.set(symbol);
+        this.symbol = symbol;
     }
 
     public Contract getTwsContract() {
@@ -421,14 +421,53 @@ public class SpreadsheetModel {
     }
 
     public String getAccount() {
-        return account.get();
+        return account;
     }
 
-    public StringProperty accountProperty() {
+    public String accountProperty() {
         return account;
     }
 
     public void setAccount(String account) {
-        this.account.set(account);
+        this.account = account;
+    }
+
+    @Override
+    public String toString() {
+        return "SpreadsheetModel{" +
+                "contract='" + contract + '\'' +
+                ", qty=" + qty +
+                ", kcContractNum=" + kcContractNum +
+                ", qtyOpenClose=" + qtyOpenClose +
+                ", entry$=" + entry$ +
+                ", mid=" + mid +
+                ", market$=" + market$ +
+                ", unrealPL=" + unrealPL +
+                ", realPL=" + realPL +
+                ", percentOfPort=" + percentOfPort +
+                ", percentPL=" + percentPL +
+                ", margin=" + margin +
+                ", probOfProfit=" + probOfProfit +
+                ", kcPercentagePort=" + kcPercentagePort +
+                ", profitPercentage=" + profitPercentage +
+                ", lossPercentage=" + lossPercentage +
+                ", kcEdge=" + kcEdge +
+                ", kcProfitPercentage=" + kcProfitPercentage +
+                ", kcLossLevel=" + kcLossLevel +
+                ", kcTakeProfit$=" + kcTakeProfit$ +
+                ", kcTakeLoss$=" + kcTakeLoss$ +
+                ", kcNetProfit$=" + kcNetProfit$ +
+                ", kcNetLoss$=" + kcNetLoss$ +
+                ", kcMaxLoss=" + kcMaxLoss +
+                ", notional=" + notional +
+                ", delta=" + delta +
+                ", impVolPercentage=" + impVolPercentage +
+                ", bid=" + bid +
+                ", ask=" + ask +
+                ", contractId=" + contractId +
+                ", symbol='" + symbol + '\'' +
+                ", account='" + account + '\'' +
+                ", twsContract=" + twsContract +
+                '}';
     }
 }

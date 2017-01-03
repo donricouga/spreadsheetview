@@ -71,17 +71,6 @@ public class Mediator extends Application {
         if(accountInfoHandler == null)
             accountInfoHandler = new AccountInfoHandler(this, account, inLogger);
 
-        /*new Timer().schedule(
-                new TimerTask() {
-
-                    @Override
-                    public void run() {
-                        System.out.println("CALLING REQUEST ACCOUNT UPDATES");
-                        connectionHandler.getApiController().reqAccountUpdates(false, account, accountInfoHandler);
-                        connectionHandler.getApiController().reqAccountUpdates(true, account, accountInfoHandler);
-                    }
-                }, 0, 150000); //150,000 ms*/
-
         connectionHandler.getApiController().reqAccountUpdates(true, account, accountInfoHandler);
     }
 
