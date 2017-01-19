@@ -86,6 +86,7 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
     private SpreadsheetModel createSpreadsheetModel(Position pos) {
         SpreadsheetModel model = new SpreadsheetModel();
         model.setContract(generateContractName(pos.contract()));
+        model.setQty((double) pos.position());
         model.setContractId(pos.contract().conid());
         model.setEntry$(calculateAvgCost(pos.contract(),pos.averageCost()));
         model.setMarket$(pos.marketPrice());
