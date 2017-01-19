@@ -1,6 +1,7 @@
 package ca.riveros.ib.events;
 
 import ca.riveros.ib.data.PersistentFields;
+import ca.riveros.ib.ui.FlashingAnimation;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -9,6 +10,7 @@ import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
 import static ca.riveros.ib.Common.calcKCTakeProfit$;
+import static ca.riveros.ib.Common.calcKcCalculateTakeLossAt;
 import static ca.riveros.ib.Common.calcKcContractNum;
 import static ca.riveros.ib.Common.calcKcLossLevel;
 import static ca.riveros.ib.Common.calcKcNetLoss$;
@@ -18,6 +20,8 @@ import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.ACCOUNT;
 import static ca.riveros.ib.TableColumnIndexes.CONTRACTID;
 import static ca.riveros.ib.TableColumnIndexes.ENTRYDOL;
+import static ca.riveros.ib.TableColumnIndexes.KCCALCTAKELOSSAT;
+import static ca.riveros.ib.TableColumnIndexes.KCCREDITREC;
 import static ca.riveros.ib.TableColumnIndexes.KCEDGE;
 import static ca.riveros.ib.TableColumnIndexes.KCLOSSPER;
 import static ca.riveros.ib.TableColumnIndexes.KCMAXLOSS;
@@ -27,6 +31,7 @@ import static ca.riveros.ib.TableColumnIndexes.KCCONTRACTNUM;
 import static ca.riveros.ib.TableColumnIndexes.KCTAKELOSSDOL;
 import static ca.riveros.ib.TableColumnIndexes.KCTAKEPROFITDOL;
 import static ca.riveros.ib.TableColumnIndexes.KCTAKEPROFITPER;
+import static ca.riveros.ib.TableColumnIndexes.MID;
 import static ca.riveros.ib.TableColumnIndexes.QTY;
 import static ca.riveros.ib.TableColumnIndexes.QTYOPENCLOSE;
 
@@ -59,12 +64,15 @@ public class KCTakeProfitPerEvent implements ChangeListener<Object> {
         Double kcMaxLoss = (Double) rowList.get(KCMAXLOSS.getIndex()).getItem();
         Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
         Double kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
+        Double kcCreditReceived = (Double) rowList.get(KCCREDITREC.getIndex()).getItem();
+        Double mid = (Double) rowList.get(MID.getIndex()).getItem();
 
         Platform.runLater(() -> {
 
             //Calculate KC Take Profit $
             Double kcTakeProfit$ = calcKCTakeProfit$(entry$, kcTakeProfitPer);
-            updateCellValue(rowList.get(KCTAKEPROFITDOL.getIndex()), kcTakeProfit$);
+            SpreadsheetCell kcTakeProfit$Cell = rowList.get(KCTAKEPROFITDOL.getIndex());
+            updateCellValue(kcTakeProfit$Cell, kcTakeProfit$);
 
             //Calculate KC Loss Level
             Double kcLossLevel = calcKcLossLevel(kcTakeProfitPer, kcProbProfit, kcEdge);
@@ -85,6 +93,16 @@ public class KCTakeProfitPerEvent implements ChangeListener<Object> {
             //Calculate Qty. Open/Close
             Double qtyOpenClose = calcQtyOpenClose(kcContractNum, qty);
             updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), qtyOpenClose);
+
+            //Calculate KC Calculate Take Loss At
+            Double kcCalcTakeLossAt = calcKcCalculateTakeLossAt(kcCreditReceived, kcProbProfit, kcTakeLoss$);
+            updateCellValue(rowList.get(KCCALCTAKELOSSAT.getIndex()), kcCalcTakeLossAt);
+
+            //Set Flashing Animation to KCTakeProfit$ Cell if MID > KCTakeProfit$
+            if (mid > kcTakeProfit$)
+                FlashingAnimation.getInstance().playKcTakeProfit$Animation(kcTakeProfit$Cell, FlashingAnimation.NEGATIVE);
+            else
+                FlashingAnimation.getInstance().stopKcTakeProfit$Animation(kcTakeProfit$Cell);
 
         });
     }

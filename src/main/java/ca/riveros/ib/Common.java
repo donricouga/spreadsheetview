@@ -1,6 +1,10 @@
 package ca.riveros.ib;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.util.Duration;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
 import java.util.List;
@@ -66,6 +70,11 @@ public class Common {
     //Qty. Open/Close
     public static Double calcQtyOpenClose(Double kcContractNum, Double qty) {
         return kcContractNum - qty;
+    }
+
+    //KC Calculate Take Loss At
+    public static Double calcKcCalculateTakeLossAt(Double kcCreditReceived, Double kcProbProfit, Double kcTakeLoss$) {
+        return ((kcCreditReceived * (kcProbProfit * 100)) * 100) - ((kcTakeLoss$ * (1 - (kcProbProfit * 100) * 100)));
     }
 
 }

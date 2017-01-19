@@ -13,27 +13,28 @@ public enum TableColumnIndexes {
     LOSSPER(9), //editable
     KCPROBPROFIT(10), //editable
     KCEDGE(11), //editable
-    KCCREDITREC(12), //NEW
-    KCTAKEPROFITPER(13), //NEW THIS IS THE OLD KC PROFIT %
-    KCTAKEPROFITDOL(14),
-    KCNETPROFITDOL(15),
-    KCLOSSPER(16),
-    KCTAKELOSSDOL(17),
-    KCNETLOSSDOL(18),
-    KCPERPORT(19),  //editable
-    KCMAXLOSS(20),
-    KCCONTRACTNUM(21),
-    QTYOPENCLOSE(22),
-    MARKETDOL(23),
-    NOTIONAL(24),
-    DELTA(25),
-    IMPVOLPER(26),
-    PERPL(27),
-    BID(28),  //Hide This Column
-    ASK(29),  //Hide This Column
-    CONTRACTID(30), //Hide This Column
-    SYMBOL(31), //Hide this Column
-    ACCOUNT(32); //Hide this Column
+    KCCALCTAKELOSSAT(12),
+    KCCREDITREC(13), //NEW
+    KCTAKEPROFITPER(14), //NEW THIS IS THE OLD KC PROFIT %
+    KCTAKEPROFITDOL(15),
+    KCNETPROFITDOL(16),
+    KCLOSSPER(17),
+    KCTAKELOSSDOL(18),
+    KCNETLOSSDOL(19),
+    KCPERPORT(20),  //editable
+    KCMAXLOSS(21),
+    KCCONTRACTNUM(22),
+    QTYOPENCLOSE(23),
+    MARKETDOL(24),
+    NOTIONAL(25),
+    DELTA(26),
+    IMPVOLPER(27),
+    PERPL(28),
+    BID(29),  //Hide This Column
+    ASK(30),  //Hide This Column
+    CONTRACTID(31), //Hide This Column
+    SYMBOL(32), //Hide this Column
+    ACCOUNT(33); //Hide this Column
 
     private int index;
 

@@ -22,6 +22,7 @@ public class SpreadsheetModel {
     private DoubleProperty profitPercentage = new SimpleDoubleProperty();
     private DoubleProperty lossPercentage = new SimpleDoubleProperty();
     private DoubleProperty kcEdge = new SimpleDoubleProperty();
+    private DoubleProperty kcCalcTakeLossAt = new SimpleDoubleProperty();
     private DoubleProperty kcProfitPercentage = new SimpleDoubleProperty();
     private DoubleProperty kcLossLevel = new SimpleDoubleProperty();
     private DoubleProperty kcTakeProfit$ = new SimpleDoubleProperty();
@@ -242,6 +243,18 @@ public class SpreadsheetModel {
 
     public void setKcEdge(Double kcEdge) {
         this.kcEdge.set(kcEdge);
+    }
+
+    public double getKcCalcTakeLossAt() {
+        return kcCalcTakeLossAt.get();
+    }
+
+    public DoubleProperty kcCalcTakeLossAtProperty() {
+        return kcCalcTakeLossAt;
+    }
+
+    public void setKcCalcTakeLossAt(Double kcCalcTakeLossAt) {
+        this.kcCalcTakeLossAt.set(kcCalcTakeLossAt);
     }
 
     public Double getKcProfitPercentage() {

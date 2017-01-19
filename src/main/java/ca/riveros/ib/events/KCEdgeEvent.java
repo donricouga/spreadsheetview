@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
+import static ca.riveros.ib.Common.calcKcCalculateTakeLossAt;
 import static ca.riveros.ib.Common.calcKcContractNum;
 import static ca.riveros.ib.Common.calcKcLossLevel;
 import static ca.riveros.ib.Common.calcKcNetLoss$;
@@ -44,6 +45,7 @@ public class KCEdgeEvent implements ChangeListener<Object> {
         Double entry$ = (Double) rowList.get(ENTRYDOL.getIndex()).getItem();
         Double kcMaxLoss = (Double) rowList.get(KCMAXLOSS.getIndex()).getItem();
         Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
+        Double kcCreditReceived = (Double) rowList.get(KCCREDITREC.getIndex()).getItem();
 
         Platform.runLater(() -> {
 
@@ -67,6 +69,10 @@ public class KCEdgeEvent implements ChangeListener<Object> {
             //Calculate Qty. Open/Close
             Double qtyOpenClose = kcQty - qty;
             updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), qtyOpenClose);
+
+            //Calculate KC Calculate Take Loss At
+            Double kcCalcTakeLossAt = calcKcCalculateTakeLossAt(kcCreditReceived, kcProbProfit, kcTakeLoss$);
+            updateCellValue(rowList.get(KCCALCTAKELOSSAT.getIndex()), kcCalcTakeLossAt);
 
         });
     }

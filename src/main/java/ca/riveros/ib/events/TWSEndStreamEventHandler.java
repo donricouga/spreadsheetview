@@ -1,6 +1,7 @@
 package ca.riveros.ib.events;
 
 import ca.riveros.ib.Mediator;
+import ca.riveros.ib.ui.FlashingAnimation;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -21,11 +22,12 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
     private Double entry$;
     private Double netLiq;
     private Double qty;
-    private Double probProfit;
+    private Double mid;
+    private Double kcProbProfit;
     private Double kcPercentPort;
-    private Double profitPercent;
     private Double kcEdge;
     private Double kcTakeProfitPer;
+    private Double kcCreditReceived;
 
     @Override
     public void handle(Event event) {
@@ -36,13 +38,14 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
         entry$ = (Double) rowList.get(ENTRYDOL.getIndex()).getItem();
         netLiq = Mediator.INSTANCE.getAccountNetLiq();
         qty = (Double) rowList.get(QTY.getIndex()).getItem();
+        mid = (Double) rowList.get(MID.getIndex()).getItem();
 
         //Let's get all the manual Fields First since they are already there.
-        probProfit = (Double) rowList.get(KCPROBPROFIT.getIndex()).getItem();
+        kcProbProfit = (Double) rowList.get(KCPROBPROFIT.getIndex()).getItem();
         kcPercentPort = (Double) rowList.get(KCPERPORT.getIndex()).getItem();
-        profitPercent = (Double) rowList.get(PROFITPER.getIndex()).getItem();
         kcEdge = (Double) rowList.get(KCEDGE.getIndex()).getItem();
         kcTakeProfitPer = (Double) rowList.get(KCTAKEPROFITPER.getIndex()).getItem();
+        kcCreditReceived = (Double) rowList.get(KCCREDITREC.getIndex()).getItem();
 
         Platform.runLater(() -> updateCalculatedFields());
     }
@@ -52,14 +55,15 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
 
         //Calculate KC Take Profit $
         Double kcTakeProfit$ = calcKCTakeProfit$(entry$, kcTakeProfitPer);
-        updateCellValue(rowList.get(KCTAKEPROFITDOL.getIndex()), kcTakeProfit$);
+        SpreadsheetCell kcTakeProfit$Cell = rowList.get(KCTAKEPROFITDOL.getIndex());
+        updateCellValue(kcTakeProfit$Cell, kcTakeProfit$);
 
         //Calculate KC Net Profit $
         Double kcNetProfit$ = calcKcNetProfit$(entry$, kcTakeProfit$);
         updateCellValue(rowList.get(KCNETPROFITDOL.getIndex()), kcNetProfit$);
 
         //KC Loss %
-        Double kcLossLevel = calcKcLossLevel(kcTakeProfitPer, probProfit, kcEdge);
+        Double kcLossLevel = calcKcLossLevel(kcTakeProfitPer, kcProbProfit, kcEdge);
         updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossLevel);
 
         //Calculate KC Take Loss $
@@ -81,6 +85,10 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
         //Calculate Qty. Open/Close
         Double qtyOpenClose = calcQtyOpenClose(kcContractNum, qty);
         updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), qtyOpenClose);
+
+        //Calculate KC Calculate Take Loss at
+        Double kcCalcTakeLossAt = calcKcCalculateTakeLossAt(kcCreditReceived, kcProbProfit, kcTakeLoss$);
+        updateCellValue(rowList.get(KCCALCTAKELOSSAT.getIndex()), kcCalcTakeLossAt);
     }
 
 
