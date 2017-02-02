@@ -85,7 +85,7 @@ public class ColumnSortPicker extends Picker {
     }
 
     private void addListeners(SpreadsheetCell newCell, int col, ObservableList<ObservableList<SpreadsheetCell>> spreadsheetModelObservableList) {
-        ObjectProperty<Object> itemProperty = newCell.itemProperty();
+        /*ObjectProperty<Object> itemProperty = newCell.itemProperty();
         if(col == MARGIN.getIndex())
             itemProperty.addListener(new MarginActionEvent(spreadsheetModelObservableList, Mediator.INSTANCE.getAccountNetLiq()));
         else if(col == KCPROBPROFIT.getIndex())
@@ -97,6 +97,6 @@ public class ColumnSortPicker extends Picker {
         else if(col == LOSSPER.getIndex())
             itemProperty.addListener(new LossPercentageEvent(spreadsheetModelObservableList));
         else if(col == KCEDGE.getIndex())
-            itemProperty.addListener(new KCEdgeEvent(spreadsheetModelObservableList));
+            itemProperty.addListener(new KCEdgeEvent(spreadsheetModelObservableList));*/
     }
 }

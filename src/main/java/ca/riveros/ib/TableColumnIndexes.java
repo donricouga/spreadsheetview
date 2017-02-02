@@ -11,30 +11,30 @@ public enum TableColumnIndexes {
     MARGIN(7), //editable
     PROFITPER(8),  //editable
     LOSSPER(9), //editable
-    KCPROBPROFIT(10), //editable
-    KCEDGE(11), //editable
-    KCCALCTAKELOSSAT(12),
-    KCCREDITREC(13), //NEW
-    KCTAKEPROFITPER(14), //NEW THIS IS THE OLD KC PROFIT %
-    KCTAKEPROFITDOL(15),
-    KCNETPROFITDOL(16),
-    KCLOSSPER(17),
-    KCTAKELOSSDOL(18),
-    KCNETLOSSDOL(19),
-    KCPERPORT(20),  //editable
-    KCMAXLOSS(21),
-    KCCONTRACTNUM(22),
-    QTYOPENCLOSE(23),
-    MARKETDOL(24),
-    NOTIONAL(25),
-    DELTA(26),
-    IMPVOLPER(27),
-    PERPL(28),
-    BID(29),  //Hide This Column
-    ASK(30),  //Hide This Column
-    CONTRACTID(31), //Hide This Column
-    SYMBOL(32), //Hide this Column
-    ACCOUNT(33); //Hide this Column
+    KCPROBPROFIT(0), //editable
+    KCEDGE(1), //editable
+    KCCALCTAKELOSSAT(2),
+    KCCREDITREC(3), //NEW
+    KCTAKEPROFITPER(4), //NEW THIS IS THE OLD KC PROFIT %
+    KCTAKEPROFITDOL(5),
+    KCNETPROFITDOL(6),
+    KCLOSSLEVEL(7),
+    KCTAKELOSSDOL(8),
+    KCNETLOSSDOL(9),
+    KCPERPORT(10),  //editable
+    KCMAXLOSS(11),
+    KCCONTRACTNUM(12),
+    QTYOPENCLOSE(13),
+    MARKETDOL(0),
+    NOTIONAL(1),
+    DELTA(2),
+    IMPVOLPER(3),
+    PERPL(4),
+    BID(5),  //Hide This Column
+    ASK(6),  //Hide This Column
+    CONTRACTID(7), //Hide This Column
+    SYMBOL(8), //Hide this Column
+    ACCOUNT(9); //Hide this Column
 
     private int index;
 

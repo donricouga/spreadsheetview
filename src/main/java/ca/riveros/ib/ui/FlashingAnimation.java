@@ -43,7 +43,7 @@ public class FlashingAnimation {
     }
 
     public void stopKcTakeProfit$Animation(SpreadsheetCell cell) {
-        if(kcTakeProfit$Animation.getStatus() == Animation.Status.RUNNING) {
+        if(kcTakeProfit$Animation != null && kcTakeProfit$Animation.getStatus() == Animation.Status.RUNNING) {
             kcTakeProfit$Animation.stop();
             cell.setStyle("-fx-background-color: white");
         }

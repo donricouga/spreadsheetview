@@ -21,9 +21,15 @@ import static ca.riveros.ib.TableColumnIndexes.*;
 public class KCPercentPortEvent implements ChangeListener<Object> {
 
     private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList;
+    private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList2;
+    private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList3;
 
-    public KCPercentPortEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList) {
+    public KCPercentPortEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList,
+                              ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList2,
+                              ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList3) {
         this.spreadsheetDataList = spreadsheetDataList;
+        this.spreadsheetDataList2 = spreadsheetDataList2;
+        this.spreadsheetDataList3 = spreadsheetDataList3;
     }
 
     @Override
@@ -32,15 +38,17 @@ public class KCPercentPortEvent implements ChangeListener<Object> {
         SpreadsheetCell c = (SpreadsheetCell) base.getBean();
         int row = c.getRow();
         ObservableList<SpreadsheetCell> rowList = spreadsheetDataList.get(row);
+        ObservableList<SpreadsheetCell> rowList2 = spreadsheetDataList2.get(row);
+        ObservableList<SpreadsheetCell> rowList3 = spreadsheetDataList3.get(row);
         Double kcPerPort = (Double) newValue;
 
         //Update Persistent File with new Manual Value
-        String account = rowList.get(ACCOUNT.getIndex()).getText();
-        String contractId = rowList.get(CONTRACTID.getIndex()).getText();
+        String account = rowList3.get(ACCOUNT.getIndex()).getText();
+        String contractId = rowList3.get(CONTRACTID.getIndex()).getText();
         PersistentFields.setValue(account, Integer.valueOf(contractId), KCPERPORT.getIndex(), kcPerPort);
 
         //Get needed fields
-        Double kcNetLoss$ = (Double) rowList.get(KCNETLOSSDOL.getIndex()).getItem();
+        Double kcNetLoss$ = (Double) rowList2.get(KCNETLOSSDOL.getIndex()).getItem();
         Double qty = (Double) rowList.get(QTY.getIndex()).getItem();
         Double netLiq = Mediator.INSTANCE.getAccountNetLiq();
 
@@ -48,15 +56,15 @@ public class KCPercentPortEvent implements ChangeListener<Object> {
 
             //Update KC Max Loss
             Double kcMaxLoss = calcKcMaxLoss(netLiq, kcPerPort);
-            updateCellValue(rowList.get(KCMAXLOSS.getIndex()), kcMaxLoss);
+            updateCellValue(rowList2.get(KCMAXLOSS.getIndex()), kcMaxLoss);
 
             //Calculate KC Contract # (KC-Qty)
             Double kcContractNum = calcKcContractNum(kcMaxLoss, kcNetLoss$);
-            updateCellValue(rowList.get(KCCONTRACTNUM.getIndex()), kcContractNum);
+            updateCellValue(rowList2.get(KCCONTRACTNUM.getIndex()), kcContractNum);
 
             //Calculate Qty. Open/Close
             Double qtyOpenClose = calcQtyOpenClose(kcContractNum, qty);
-            updateCellValue(rowList.get(QTYOPENCLOSE.getIndex()), qtyOpenClose);
+            updateCellValue(rowList2.get(QTYOPENCLOSE.getIndex()), qtyOpenClose);
 
         });
     }

@@ -77,18 +77,22 @@ public class MktDataHandler implements ApiController.IOptHandler {
     @Override
     public void tickSnapshotEnd() {
         ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData = mediator.getSpreadSheetCells();
-        spreadSheetData.forEach(obList -> {
-            if ((Integer) obList.get(CONTRACTID.getIndex()).getItem() == contract.conid()) {
+        ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData3 = mediator.getSpreadSheetCells3();
+        for(int i = 0; i < spreadSheetData.size(); i++) {
+            ObservableList<SpreadsheetCell> list = spreadSheetData.get(i);
+            ObservableList<SpreadsheetCell> list3 = spreadSheetData3.get(i);
+
+            if ((Integer) list3.get(CONTRACTID.getIndex()).getItem() == contract.conid()) {
                 Platform.runLater(() -> {
-                    updateCellValue(obList.get(BID.getIndex()), bid);
-                    updateCellValue(obList.get(ASK.getIndex()), ask);
+                    updateCellValue(list3.get(BID.getIndex()), bid);
+                    updateCellValue(list3.get(ASK.getIndex()), ask);
                     Double mid = (bid + ask) / 2;
                     logger.log("Setting Mid Price for " + contract.description() + " " + contract.conid() + " to " + mid);
-                    SpreadsheetCell midCell = obList.get(MID.getIndex());
-                    SpreadsheetCell perPl = obList.get(PERPL.getIndex());
-                    SpreadsheetCell deltaCell = obList.get(DELTA.getIndex());
-                    SpreadsheetCell impVolCell = obList.get(IMPVOLPER.getIndex());
-                    Double entry$ = (Double) obList.get(ENTRYDOL.getIndex()).getItem();
+                    SpreadsheetCell midCell = list3.get(MID.getIndex());
+                    SpreadsheetCell perPl = list3.get(PERPL.getIndex());
+                    SpreadsheetCell deltaCell = list3.get(DELTA.getIndex());
+                    SpreadsheetCell impVolCell = list3.get(IMPVOLPER.getIndex());
+                    Double entry$ = (Double) list.get(ENTRYDOL.getIndex()).getItem();
                     updateCellValue(midCell, mid);
                     updateCellValue(perPl, calculatePercentPL(mid, entry$));
                     updateCellValue(impVolCell, this.impliedVol);
@@ -98,7 +102,7 @@ public class MktDataHandler implements ApiController.IOptHandler {
                     Event.fireEvent((SpreadsheetCellBase) midCell, new Event(twsEndStreamEventType));
                 });
             }
-        });
+        }
 
         //We need to add the Account Net Liq Listener here because we want it to start listening after initial load
         mediator.addAccountNetLiqChangeListener();

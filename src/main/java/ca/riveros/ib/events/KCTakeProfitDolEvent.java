@@ -30,9 +30,9 @@ public class KCTakeProfitDolEvent implements ChangeListener<Object> {
         Double mid = (Double) rowList.get(MID.getIndex()).getItem();
 
         //Set Flashing Animation to KCTakeProfit$ Cell if MID > KCTakeProfit$
-        /*if (mid > kcTakeProfit$)
+        if (mid > kcTakeProfit$)
             FlashingAnimation.getInstance().playKcTakeProfit$Animation(c, FlashingAnimation.NEGATIVE);
         else
-            FlashingAnimation.getInstance().stopKcTakeProfit$Animation(c);*/
+            FlashingAnimation.getInstance().stopKcTakeProfit$Animation(c);
     }
 }

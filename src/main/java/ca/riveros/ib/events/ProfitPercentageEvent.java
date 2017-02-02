@@ -52,7 +52,7 @@ public class ProfitPercentageEvent implements ChangeListener<Object> {
             //Calculate KC Loss %
             Double kcProfitPercent = profitPercent;
             Double kcLossPercent = (kcProfitPercent) / ((1 / (probProfit - kcEdge)) - 1);
-            updateCellValue(rowList.get(KCLOSSPER.getIndex()), kcLossPercent);
+            updateCellValue(rowList.get(KCLOSSLEVEL.getIndex()), kcLossPercent);
 
             //Calculate KC Take Profit $
             Double kcTakeProfit$ = entry$ * (1 - kcProfitPercent);

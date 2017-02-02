@@ -18,10 +18,14 @@ import static ca.riveros.ib.TableColumnIndexes.*;
 public class MarginActionEvent implements ChangeListener<Object> {
 
     private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList;
+    private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList3;
     private Double accountNetLiq;
 
-    public MarginActionEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList, Double accountNetLiq) {
+    public MarginActionEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList,
+                             ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList3,
+                             Double accountNetLiq) {
         this.spreadsheetDataList = spreadsheetDataList;
+        this.spreadsheetDataList3 = spreadsheetDataList3;
         this.accountNetLiq = accountNetLiq;
     }
 
@@ -31,8 +35,8 @@ public class MarginActionEvent implements ChangeListener<Object> {
         SpreadsheetCell c = (SpreadsheetCell) base.getBean();
         int row = c.getRow();
         SpreadsheetCell perOfPortCell = spreadsheetDataList.get(row).get(PEROFPORT.getIndex());
-        String account = spreadsheetDataList.get(row).get(ACCOUNT.getIndex()).getText();
-        String contractId = spreadsheetDataList.get(row).get(CONTRACTID.getIndex()).getText();
+        String account = spreadsheetDataList3.get(row).get(ACCOUNT.getIndex()).getText();
+        String contractId = spreadsheetDataList3.get(row).get(CONTRACTID.getIndex()).getText();
         Platform.runLater(() -> updateCellValue(perOfPortCell, ((Double) newValue) / accountNetLiq));
         PersistentFields.setValue(account, Integer.valueOf(contractId), MARGIN.getIndex(), (Double) newValue);
     }

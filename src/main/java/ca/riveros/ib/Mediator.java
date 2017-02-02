@@ -11,8 +11,6 @@ import javafx.stage.Stage;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Mediator extends Application {
 
@@ -83,7 +81,15 @@ public class Mediator extends Application {
     }
 
     public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells() {
-        return mainWindow.spreadSheetView.getGrid().getRows();
+        return mainWindow.spreadsheetView.getGrid().getRows();
+    }
+
+    public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells2() {
+        return mainWindow.spreadsheetView2.getGrid().getRows();
+    }
+
+    public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells3() {
+        return mainWindow.spreadsheetView3.getGrid().getRows();
     }
 
     /**
@@ -124,7 +130,7 @@ public class Mediator extends Application {
 
     public void addAccountNetLiqChangeListener() {
         if(!addedAccountNetLiqHandler)
-            mainWindow.accountNetLiqTextField.textProperty().addListener(new NetLiqChangeListener(mainWindow.spreadSheetView));
+            mainWindow.accountNetLiqTextField.textProperty().addListener(new NetLiqChangeListener(mainWindow.spreadsheetView, mainWindow.spreadsheetView2));
 
     }
 
