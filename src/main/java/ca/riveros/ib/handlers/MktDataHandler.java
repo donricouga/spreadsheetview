@@ -88,7 +88,7 @@ public class MktDataHandler implements ApiController.IOptHandler {
                     updateCellValue(list3.get(ASK.getIndex()), ask);
                     Double mid = (bid + ask) / 2;
                     logger.log("Setting Mid Price for " + contract.description() + " " + contract.conid() + " to " + mid);
-                    SpreadsheetCell midCell = list3.get(MID.getIndex());
+                    SpreadsheetCell midCell = list.get(MID.getIndex());
                     SpreadsheetCell perPl = list3.get(PERPL.getIndex());
                     SpreadsheetCell deltaCell = list3.get(DELTA.getIndex());
                     SpreadsheetCell impVolCell = list3.get(IMPVOLPER.getIndex());

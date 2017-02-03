@@ -43,7 +43,7 @@ public class NetLiqChangeListener implements ChangeListener<String> {
                 //Update KC Max Loss
                 Double kcPerPort = (Double) list2.get(counter.get()).get(KCPERPORT.getIndex()).getItem();
                 Double kcMaxLoss = kcPerPort * accountNetLiq;
-                updateCellValue(row.get(KCMAXLOSS.getIndex()), kcMaxLoss);
+                updateCellValue(list2.get(counter.get()).get(KCMAXLOSS.getIndex()), kcMaxLoss);
 
                 //Update KC-Qty
                 Double kcEdge = (Double) list2.get(counter.get()).get(KCEDGE.getIndex()).getItem();
