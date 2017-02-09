@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
+import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import java.util.List;
 
@@ -90,6 +91,10 @@ public class Mediator extends Application {
 
     public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells3() {
         return mainWindow.spreadsheetView3.getGrid().getRows();
+    }
+
+    public SpreadsheetView getBlockTradingSpreadSheetView(){
+        return mainWindow.spreadsheetView4;
     }
 
     /**

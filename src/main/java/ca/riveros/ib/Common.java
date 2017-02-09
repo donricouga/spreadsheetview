@@ -4,8 +4,10 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.util.Duration;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
+import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -75,6 +77,41 @@ public class Common {
     //KC Calculate Take Loss At
     public static Double calcKcCalculateTakeLossAt(Double kcCreditReceived, Double kcProbProfit, Double kcTakeLoss$) {
         return ((kcCreditReceived * (kcProbProfit * 100)) * 100) - ((kcTakeLoss$ * (1 - (kcProbProfit * 100) * 100)));
+    }
+
+
+    ////// UI
+
+    public static SpreadsheetCell createCell(int row, int col, String value, Boolean editable) {
+        SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(row, col, 1, 1, value);
+        cell.setEditable(editable);
+        return cell;
+    }
+
+    public static SpreadsheetCell createCell(int row, int col, Double value, Boolean editable) {
+        SpreadsheetCell cell = SpreadsheetCellType.DOUBLE.createCell(row, col, 1, 1, value);
+        cell.setEditable(editable);
+        return cell;
+    }
+
+    public static SpreadsheetCell createCell(int row, int col, Double value, Boolean editable, String format) {
+        SpreadsheetCell cell = SpreadsheetCellType.DOUBLE.createCell(row, col, 1, 1, value);
+        cell.setEditable(editable);
+        cell.setFormat(format);
+        return cell;
+    }
+
+    public static SpreadsheetCell createCell(int row, int col, Double value, Boolean editable, String cssClass, ChangeListener cl) {
+        SpreadsheetCell cell = createCell(row,col,value,editable);
+        cell.getStyleClass().add(cssClass);
+        cell.itemProperty().addListener(cl);
+        return cell;
+    }
+
+    public static SpreadsheetCell createCell(int row, int col, Double value, Boolean editable, String cssClass, ChangeListener cl, String format) {
+        SpreadsheetCell cell = createCell(row,col,value,editable, cssClass, cl);
+        cell.setFormat(format);
+        return cell;
     }
 
 }

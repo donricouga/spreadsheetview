@@ -1,5 +1,6 @@
 package ca.riveros.ib.events;
 
+import ca.riveros.ib.Common;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -9,6 +10,7 @@ import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static ca.riveros.ib.Common.calcKcMaxLoss;
 import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.*;
 
@@ -42,7 +44,7 @@ public class NetLiqChangeListener implements ChangeListener<String> {
 
                 //Update KC Max Loss
                 Double kcPerPort = (Double) list2.get(counter.get()).get(KCPERPORT.getIndex()).getItem();
-                Double kcMaxLoss = kcPerPort * accountNetLiq;
+                Double kcMaxLoss = calcKcMaxLoss(accountNetLiq, kcPerPort);
                 updateCellValue(list2.get(counter.get()).get(KCMAXLOSS.getIndex()), kcMaxLoss);
 
                 //Update KC-Qty

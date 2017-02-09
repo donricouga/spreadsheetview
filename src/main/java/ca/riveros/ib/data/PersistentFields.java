@@ -1,6 +1,7 @@
 package ca.riveros.ib.data;
 
 import java.io.*;
+import java.util.Optional;
 import java.util.Properties;
 
 public final class PersistentFields {
@@ -54,6 +55,30 @@ public final class PersistentFields {
         }catch(IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    public static Double getPercentTraded(String account, Double defaultValue) {
+        Object o = properties.get("block.trading.percent.traded." + account);
+        if(o == null) {
+            return defaultValue;
+        }
+        return Double.valueOf((String) o);
+    }
+
+    public static Double getPercentSymbol(String account, Double defaultValue) {
+        Object o = properties.get("block.trading.percent.symbol." + account);
+        if(o == null) {
+            return defaultValue;
+        }
+        return Double.valueOf((String) o);
+    }
+
+    public static Double getMargin(String account, Double defaultValue) {
+        Object o = properties.get("block.trading.margin." + account);
+        if(o == null) {
+            return defaultValue;
+        }
+        return Double.valueOf((String) o);
     }
 
     public static void clearProperties() {

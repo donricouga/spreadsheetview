@@ -4,7 +4,6 @@ import ca.riveros.ib.events.*;
 import ca.riveros.ib.model.SpreadsheetModel;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -24,6 +23,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static ca.riveros.ib.Common.createCell;
 import static ca.riveros.ib.events.EventTypes.twsEndStreamEventType;
 import static ca.riveros.ib.TableColumnIndexes.*;
 import static ca.riveros.ib.data.PersistentFields.getValue;
@@ -39,6 +39,7 @@ public class TwsIbSpreadSheetView extends Application {
     SpreadsheetView spreadsheetView;
     SpreadsheetView spreadsheetView2;
     SpreadsheetView spreadsheetView3;
+    SpreadsheetView spreadsheetView4;
 
     private BorderPane borderPane;
     private final CheckBox rowHeader = new CheckBox();
@@ -65,8 +66,11 @@ public class TwsIbSpreadSheetView extends Application {
 
     //Formats
     private String percentFormat = "##.######" + "%";
+    private String twoPercentFormat = "##.##" + "%";
     private String dollarFormat = "\u0024" + "#,##0.00";
     private String decimalFormat = "#.0000";
+    private String twoDecimalFormat = "#.00";
+    private String noDecimals = "#";
 
 
     private Boolean logsDisplayed = false;
@@ -96,6 +100,8 @@ public class TwsIbSpreadSheetView extends Application {
     private final List<String> columnData3 = Arrays.asList("Market $", "Notional",
             "Delta", "ImplVol %", "% P/L", "Bid", "Ask", "Contract ID", "Symbol", "Account");
 
+    private final List<String> columnData4 = Arrays.asList("Acc. #", "Net Liq", "% Traded", "$Traded", "% Symbol", "$ Symbol", "Margin", "Contract");
+
     //@Override
     public String getSampleName() {
         return "Custom Data Table";
@@ -108,6 +114,7 @@ public class TwsIbSpreadSheetView extends Application {
         spreadsheetView = createSpreadsheetViews(columnData1);
         spreadsheetView2 = createSpreadsheetViews(columnData2);
         spreadsheetView3 = createSpreadsheetViews(columnData3);
+        spreadsheetView4 = createSpreadsheetViews(columnData4);
 
 
         //set the default column configuration
@@ -191,7 +198,11 @@ public class TwsIbSpreadSheetView extends Application {
         tab3.setText("Tab 3");
         tab3.setContent(spreadsheetView3);
 
-        tabPane.getTabs().addAll(tab,tab2,tab3);
+        Tab tab4 = new Tab();
+        tab4.setText("Block Trading");
+        tab4.setContent(spreadsheetView4);
+
+        tabPane.getTabs().addAll(tab,tab2,tab3, tab4);
         return tabPane;
     }
 
@@ -277,32 +288,6 @@ public class TwsIbSpreadSheetView extends Application {
         spreadsheetView3.getColumns().get(SYMBOL.getIndex()).setMinWidth(0);
     }
 
-    private SpreadsheetCell createCell(int row, int col, Double value, Boolean editable) {
-        SpreadsheetCell cell = SpreadsheetCellType.DOUBLE.createCell(row, col, 1, 1, value);
-        cell.setEditable(editable);
-        return cell;
-    }
-
-    private SpreadsheetCell createCell(int row, int col, Double value, Boolean editable, String format) {
-        SpreadsheetCell cell = SpreadsheetCellType.DOUBLE.createCell(row, col, 1, 1, value);
-        cell.setEditable(editable);
-        cell.setFormat(format);
-        return cell;
-    }
-
-    private SpreadsheetCell createCell(int row, int col, Double value, Boolean editable, String cssClass, ChangeListener cl) {
-        SpreadsheetCell cell = createCell(row,col,value,editable);
-        cell.getStyleClass().add(cssClass);
-        cell.itemProperty().addListener(cl);
-        return cell;
-    }
-
-    private SpreadsheetCell createCell(int row, int col, Double value, Boolean editable, String cssClass, ChangeListener cl, String format) {
-        SpreadsheetCell cell = createCell(row,col,value,editable, cssClass, cl);
-        cell.setFormat(format);
-        return cell;
-    }
-
 
     public void updateSpreadsheetViewGrid(List<SpreadsheetModel> list) {
         Grid g = spreadsheetView.getGrid();
@@ -322,9 +307,7 @@ public class TwsIbSpreadSheetView extends Application {
             ObservableList<SpreadsheetCell> rowsList = FXCollections.observableArrayList();
             ObservableList<SpreadsheetCell> rowsList2 = FXCollections.observableArrayList();
             ObservableList<SpreadsheetCell> rowsList3 = FXCollections.observableArrayList();
-            SpreadsheetCell contractCell = SpreadsheetCellType.STRING.createCell(counter.intValue(),CONTRACT.getIndex(),1,1,sm.getContract());
-            contractCell.setWrapText(true);
-            rowsList.add(contractCell);
+            rowsList.add(SpreadsheetCellType.STRING.createCell(counter.intValue(),CONTRACT.getIndex(),1,1,sm.getContract()));
             rowsList.add(createCell(counter.intValue(),QTY.getIndex(),sm.getQty(),false));
             rowsList.add(createCell(counter.intValue(),ENTRYDOL.getIndex(),sm.getEntry$(),false, dollarFormat));
             SpreadsheetCell mid = createCell(counter.intValue(),MID.getIndex(),sm.getMid(),false, decimalFormat);
@@ -342,7 +325,7 @@ public class TwsIbSpreadSheetView extends Application {
             else if(sm.getRealPL() < 0)
                 unrealPNLCell.getStyleClass().add("negative");
             rowsList.add(realPNLCell);
-            rowsList.add(createCell(counter.intValue(),PEROFPORT.getIndex(),sm.getPercentOfPort(),false, percentFormat));
+            rowsList.add(createCell(counter.intValue(),PEROFPORT.getIndex(),sm.getPercentOfPort(),false, "##.#############" + "%"));
             rowsList.add(createCell(counter.intValue(),MARGIN.getIndex(),getValue(account,sm.getContractId(), MARGIN.getIndex(), 0.0), true, "manualy",
                     new MarginActionEvent(spreadsheetModelObservableList, spreadsheetModelObservableList3, Double.valueOf(accountNetLiqTextField.getText())), percentFormat));
             rowsList.add(createCell(counter.intValue(),PROFITPER.getIndex(),getValue(account, sm.getContractId(), PROFITPER.getIndex(), 0.57), true, "manualy",
@@ -364,14 +347,16 @@ public class TwsIbSpreadSheetView extends Application {
             rowsList2.add(createCell(counter.intValue(),KCNETLOSSDOL.getIndex(),sm.getKcNetLoss$(),false, dollarFormat));
             rowsList2.add(createCell(counter.intValue(),KCPERPORT.getIndex(),getValue(account, sm.getContractId(), KCPERPORT.getIndex(), 0.0075), true, "manualy",
                     new KCPercentPortEvent(spreadsheetModelObservableList, spreadsheetModelObservableList2, spreadsheetModelObservableList3), percentFormat));
-            rowsList2.add(createCell(counter.intValue(),KCMAXLOSS.getIndex(),sm.getKcMaxLoss(),false));
-            rowsList2.add(createCell(counter.intValue(),KCCONTRACTNUM.getIndex(),sm.getKcContractNum(),false, decimalFormat));
-            rowsList2.add(createCell(counter.intValue(),QTYOPENCLOSE.getIndex(),sm.getQtyOpenClose(),false, decimalFormat));
+            rowsList2.add(createCell(counter.intValue(),KCMAXLOSS.getIndex(),sm.getKcMaxLoss(),false, noDecimals));
+            rowsList2.add(createCell(counter.intValue(),KCCONTRACTNUM.getIndex(),sm.getKcContractNum(),false, noDecimals));
+            SpreadsheetCell qtyOpenClose = createCell(counter.intValue(),QTYOPENCLOSE.getIndex(),sm.getQtyOpenClose(),false, decimalFormat);
+            qtyOpenClose.itemProperty().addListener(new QtyOpenCloseEvent(spreadsheetModelObservableList2));
+            rowsList2.add(qtyOpenClose);
             rowsList3.add(createCell(counter.intValue(),MARKETDOL.getIndex(),sm.getMarket$(),false, dollarFormat));
-            rowsList3.add(createCell(counter.intValue(),NOTIONAL.getIndex(),sm.getNotional(),false, dollarFormat));
-            rowsList3.add(createCell(counter.intValue(),DELTA.getIndex(),sm.getDelta(),false));
-            rowsList3.add(createCell(counter.intValue(),IMPVOLPER.getIndex(),sm.getImpVolPercentage(),false));
-            rowsList3.add(createCell(counter.intValue(),PERPL.getIndex(),sm.getPercentPL(),false, percentFormat));
+            rowsList3.add(createCell(counter.intValue(),NOTIONAL.getIndex(),sm.getNotional(),false, noDecimals));
+            rowsList3.add(createCell(counter.intValue(),DELTA.getIndex(),sm.getDelta(),false, twoDecimalFormat));
+            rowsList3.add(createCell(counter.intValue(),IMPVOLPER.getIndex(),sm.getImpVolPercentage(),false, twoDecimalFormat));
+            rowsList3.add(createCell(counter.intValue(),PERPL.getIndex(),sm.getPercentPL(),false, twoPercentFormat));
             rowsList3.add(createCell(counter.intValue(),BID.getIndex(),sm.getBid(),false)); //BID
             rowsList3.add(createCell(counter.intValue(),ASK.getIndex(),sm.getAsk(),false)); //ASK
             rowsList3.add(SpreadsheetCellType.INTEGER.createCell(counter.intValue(),CONTRACTID.getIndex(),1,1,sm.getContractId()));
