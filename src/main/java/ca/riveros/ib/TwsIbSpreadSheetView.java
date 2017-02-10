@@ -24,6 +24,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ca.riveros.ib.Common.createCell;
+import static ca.riveros.ib.Common.decimalFormat;
+import static ca.riveros.ib.Common.dollarFormat;
+import static ca.riveros.ib.Common.noDecimals;
+import static ca.riveros.ib.Common.percentFormat;
+import static ca.riveros.ib.Common.twoDecimalFormat;
+import static ca.riveros.ib.Common.twoPercentFormat;
 import static ca.riveros.ib.events.EventTypes.twsEndStreamEventType;
 import static ca.riveros.ib.TableColumnIndexes.*;
 import static ca.riveros.ib.data.PersistentFields.getValue;
@@ -63,14 +69,6 @@ public class TwsIbSpreadSheetView extends Application {
     TextArea inLoggerText = new TextArea("");
     TextArea outLoggerText = new TextArea("");
     TextArea messagesLoggerText = new TextArea("");
-
-    //Formats
-    private String percentFormat = "##.######" + "%";
-    private String twoPercentFormat = "##.##" + "%";
-    private String dollarFormat = "\u0024" + "#,##0.00";
-    private String decimalFormat = "#.0000";
-    private String twoDecimalFormat = "#.00";
-    private String noDecimals = "#";
 
 
     private Boolean logsDisplayed = false;

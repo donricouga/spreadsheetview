@@ -1,6 +1,8 @@
 package ca.riveros.ib.handlers;
 
 import ca.riveros.ib.Mediator;
+import ca.riveros.ib.events.BTMarginEvent;
+import ca.riveros.ib.events.PercentSymbolEvent;
 import com.ib.controller.AccountSummaryTag;
 import com.ib.controller.ApiController;
 import javafx.collections.FXCollections;
@@ -12,7 +14,20 @@ import org.controlsfx.control.spreadsheet.SpreadsheetView;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static ca.riveros.ib.Common.calc$Symbol;
+import static ca.riveros.ib.Common.calc$Traded;
+import static ca.riveros.ib.Common.calcContract;
 import static ca.riveros.ib.Common.createCell;
+import static ca.riveros.ib.Common.dollarFormat;
+import static ca.riveros.ib.Common.twoPercentFormat;
+import static ca.riveros.ib.TableColumnIndexes.ACCOUNTNUM;
+import static ca.riveros.ib.TableColumnIndexes.BTCONTRACT;
+import static ca.riveros.ib.TableColumnIndexes.BTMARGIN;
+import static ca.riveros.ib.TableColumnIndexes.DOLSYMBOL;
+import static ca.riveros.ib.TableColumnIndexes.DOLTRADED;
+import static ca.riveros.ib.TableColumnIndexes.NETLIQ;
+import static ca.riveros.ib.TableColumnIndexes.PERSYMBOL;
+import static ca.riveros.ib.TableColumnIndexes.PERTRADED;
 import static ca.riveros.ib.data.PersistentFields.getMargin;
 import static ca.riveros.ib.data.PersistentFields.getPercentSymbol;
 import static ca.riveros.ib.data.PersistentFields.getPercentTraded;
@@ -69,20 +84,29 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
         AtomicInteger counter = new AtomicInteger(0);
         accountNetLiqMap.forEach((k,v) -> {
             ObservableList<SpreadsheetCell> rowsList = FXCollections.observableArrayList();
-            rowsList.add(createCell(counter.intValue(),0, k, false));
-            rowsList.add(createCell(counter.intValue(),1, v, false));
-            Double percentTraded = getPercentTraded(k, 0.27);
             Double netLiq = Double.valueOf(v);
-            rowsList.add(createCell(counter.intValue(),2, getPercentTraded(k, 0.27), false));
-            Double dollarTraded = percentTraded * netLiq;
-            rowsList.add(createCell(counter.intValue(),3, dollarTraded, false));
+            rowsList.add(createCell(counter.intValue(),ACCOUNTNUM.getIndex(), k, false));
+
+            rowsList.add(createCell(counter.intValue(),NETLIQ.getIndex(), netLiq, false, dollarFormat));
+            Double percentTraded = getPercentTraded(k, 0.27);
+
+            rowsList.add(createCell(counter.intValue(),PERTRADED.getIndex(), getPercentTraded(k, 0.27), true, twoPercentFormat));
+            Double dollarTraded = calc$Traded(netLiq, percentTraded);
+
+            rowsList.add(createCell(counter.intValue(),DOLTRADED.getIndex(), dollarTraded, false, dollarFormat));
             Double percentSymbol = getPercentSymbol(k, 0.012);
-            rowsList.add(createCell(counter.intValue(),4, percentSymbol, false));
-            Double dollarSymbol = percentSymbol * dollarTraded;
-            rowsList.add(createCell(counter.intValue(),5, dollarSymbol , false));
+
+            rowsList.add(createCell(counter.intValue(),PERSYMBOL.getIndex(), percentSymbol, true,
+                    "manualy", new PercentSymbolEvent(spreadsheetModelObservableList), twoPercentFormat));
+            Double dollarSymbol = calc$Symbol(dollarTraded, percentSymbol);
+
+            rowsList.add(createCell(counter.intValue(),DOLSYMBOL.getIndex(), dollarSymbol , false, dollarFormat));
             Double margin = getMargin(k, 1600.00);
-            rowsList.add(createCell(counter.intValue(),6, margin, false));
-            rowsList.add(createCell(counter.intValue(),7, Math.floor(dollarSymbol / margin), false));
+
+            rowsList.add(createCell(counter.intValue(),BTMARGIN.getIndex(), margin, true,
+                    "manualy", new BTMarginEvent(spreadsheetModelObservableList)));
+
+            rowsList.add(createCell(counter.intValue(),BTCONTRACT.getIndex(), calcContract(dollarSymbol, margin), false));
 
             spreadsheetModelObservableList.add(rowsList);
             counter.incrementAndGet();

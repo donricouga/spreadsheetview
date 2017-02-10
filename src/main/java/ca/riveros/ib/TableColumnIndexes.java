@@ -34,7 +34,17 @@ public enum TableColumnIndexes {
     ASK(6),  //Hide This Column
     CONTRACTID(7), //Hide This Column
     SYMBOL(8), //Hide this Column
-    ACCOUNT(9); //Hide this Column
+    ACCOUNT(9), //Hide this Column
+
+    //BLOCK TRADING
+    ACCOUNTNUM(0),
+    NETLIQ(1),
+    PERTRADED(2),
+    DOLTRADED(3),
+    PERSYMBOL(4),
+    DOLSYMBOL(5),
+    BTMARGIN(6),
+    BTCONTRACT(7);
 
     private int index;
 

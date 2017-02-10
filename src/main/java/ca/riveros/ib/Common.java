@@ -17,6 +17,14 @@ import java.util.function.Predicate;
  */
 public class Common {
 
+    //Formats
+    public static final String percentFormat = "##.######" + "%";
+    public static final String twoPercentFormat = "##.##" + "%";
+    public static final String dollarFormat = "\u0024" + "#,##0.00";
+    public static final String decimalFormat = "#.0000";
+    public static final String twoDecimalFormat = "#.00";
+    public static final String noDecimals = "#";
+
     public static Predicate<List<?>> hasElements = (list) -> list != null && list.size() > 0;
 
     public static void updateCellValue(SpreadsheetCell cell, Double value) {
@@ -77,6 +85,20 @@ public class Common {
     //KC Calculate Take Loss At
     public static Double calcKcCalculateTakeLossAt(Double kcCreditReceived, Double kcProbProfit, Double kcTakeLoss$) {
         return ((kcCreditReceived * (kcProbProfit * 100)) * 100) - ((kcTakeLoss$ * (1 - (kcProbProfit * 100) * 100)));
+    }
+
+    /***** BLOCK TRADING ********/
+    //Calculate Contract
+    public static Double calcContract(Double $symbol, Double margin) {
+        return Math.floor($symbol / margin);
+    }
+
+    public static Double calc$Symbol(Double $traded, Double perSymbol) {
+        return $traded * perSymbol;
+    }
+
+    public static Double calc$Traded(Double netLiq, Double perTraded) {
+        return perTraded * netLiq;
     }
 
 

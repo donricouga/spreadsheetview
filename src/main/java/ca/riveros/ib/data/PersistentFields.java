@@ -48,13 +48,7 @@ public final class PersistentFields {
 
     public static void setValue(String account, int contractId, int col, Double value) {
         properties.setProperty(account + "." + contractId + "." + col, value.toString());
-        try {
-            out = new FileOutputStream(file);
-            properties.store(out, "");
-            out.close();
-        }catch(IOException ioe) {
-            ioe.printStackTrace();
-        }
+        writeToFile();
     }
 
     public static Double getPercentTraded(String account, Double defaultValue) {
@@ -65,12 +59,22 @@ public final class PersistentFields {
         return Double.valueOf((String) o);
     }
 
+    public static void setPercentTraded(String account, Double percentTraded) {
+        properties.setProperty("block.trading.percent.traded." + account, percentTraded.toString());
+        writeToFile();
+    }
+
     public static Double getPercentSymbol(String account, Double defaultValue) {
         Object o = properties.get("block.trading.percent.symbol." + account);
         if(o == null) {
             return defaultValue;
         }
         return Double.valueOf((String) o);
+    }
+
+    public static void setPercentSymbol(String account, Double percentSymbol) {
+        properties.setProperty("block.trading.percent.symbol." + account, percentSymbol.toString());
+        writeToFile();
     }
 
     public static Double getMargin(String account, Double defaultValue) {
@@ -81,10 +85,25 @@ public final class PersistentFields {
         return Double.valueOf((String) o);
     }
 
+    public static void setMargin(String account, Double margin) {
+        properties.setProperty("block.trading.margin." + account, margin.toString());
+        writeToFile();
+    }
+
     public static void clearProperties() {
         try {
             out = new FileOutputStream(file);
             properties.clear();
+            out.close();
+        }catch(IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    private static void writeToFile() {
+        try {
+            out = new FileOutputStream(file);
+            properties.store(out, "");
             out.close();
         }catch(IOException ioe) {
             ioe.printStackTrace();
