@@ -13,6 +13,9 @@ import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import java.util.List;
 
+import static ca.riveros.ib.Common.findCellByAccountNumberAndColumn;
+import static ca.riveros.ib.TableColumnIndexes.PERTRADED;
+
 public class Mediator extends Application {
 
     private TwsIbSpreadSheetView mainWindow;
@@ -26,6 +29,7 @@ public class Mediator extends Application {
     private Logger outLogger;
     private Logger messageLogger;
     private AccountInfoHandler accountInfoHandler;
+    private String selectedAccount;
 
     private Boolean addedAccountNetLiqHandler = false;
 
@@ -65,6 +69,7 @@ public class Mediator extends Application {
      * @param account the TWS Account Code
      */
     public void requestAccountUpdate(String account) {
+        this.selectedAccount = account;
 
         //Only one instance of a handler should exist.
         if(accountInfoHandler == null)
@@ -95,6 +100,16 @@ public class Mediator extends Application {
 
     public SpreadsheetView getBlockTradingSpreadSheetView(){
         return mainWindow.spreadsheetView4;
+    }
+
+    public String getSelectedAccount() {
+        return selectedAccount;
+    }
+
+    public Double getPercentCapitalToTradeByAccountNumber(String accountNumber) {
+        SpreadsheetView blockView = getBlockTradingSpreadSheetView();
+        SpreadsheetCell cell = findCellByAccountNumberAndColumn(blockView, accountNumber, PERTRADED.getIndex());
+        return (Double) cell.getItem();
     }
 
     /**
@@ -133,16 +148,13 @@ public class Mediator extends Application {
         }
     }
 
-    public void addAccountNetLiqChangeListener() {
-        if(!addedAccountNetLiqHandler)
-            mainWindow.accountNetLiqTextField.textProperty().addListener(new NetLiqChangeListener(mainWindow.spreadsheetView, mainWindow.spreadsheetView2));
-
-    }
-
     public ConnectionHandler getConnectionHandler() {
         return connectionHandler;
     }
 
+    public TwsIbSpreadSheetView getMainWindow() {
+        return mainWindow;
+    }
 
     public static void main(String ...args) {
         launch(args);

@@ -1,6 +1,7 @@
 package ca.riveros.ib.events;
 
 import ca.riveros.ib.Common;
+import ca.riveros.ib.Mediator;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -29,36 +30,8 @@ public class NetLiqChangeListener implements ChangeListener<String> {
 
     @Override
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        ObservableList<ObservableList<SpreadsheetCell>> list = view.getGrid().getRows();
-        ObservableList<ObservableList<SpreadsheetCell>> list2 = view2.getGrid().getRows();
-        AtomicInteger counter = new AtomicInteger(0);
-        list.forEach(row -> {
 
-            Double accountNetLiq = Double.valueOf(newValue);
-
-            Platform.runLater(() -> {
-
-                //Update Percent Of Port
-                Double margin = (Double) row.get(MARGIN.getIndex()).getItem();
-                updateCellValue(row.get(PEROFPORT.getIndex()), margin / accountNetLiq);
-
-                //Update KC Max Loss
-                Double kcPerPort = (Double) list2.get(counter.get()).get(KCPERPORT.getIndex()).getItem();
-                Double kcMaxLoss = calcKcMaxLoss(accountNetLiq, kcPerPort);
-                updateCellValue(list2.get(counter.get()).get(KCMAXLOSS.getIndex()), kcMaxLoss);
-
-                //Update KC-Qty
-                Double kcEdge = (Double) list2.get(counter.get()).get(KCEDGE.getIndex()).getItem();
-                Double entry$ = (Double) row.get(ENTRYDOL.getIndex()).getItem();
-                Double kcQty = (kcMaxLoss) / (entry$ * (1 + kcEdge) * -100);
-                updateCellValue(list2.get(counter.get()).get(KCCONTRACTNUM.getIndex()), kcQty);
-
-                //Update Qty. Open/Close
-                Double qty = (Double) row.get(QTY.getIndex()).getItem();
-                updateCellValue(list2.get(counter.get()).get(QTYOPENCLOSE.getIndex()), kcQty - qty);
-
-                counter.incrementAndGet();
-            });
-        });
     }
 }
+
+//CONSOLIDATE NETLIQ LISTENER AND HANDLER

@@ -55,7 +55,8 @@ public class KCPercentPortEvent implements ChangeListener<Object> {
         Platform.runLater(() -> {
 
             //Update KC Max Loss
-            Double kcMaxLoss = calcKcMaxLoss(netLiq, kcPerPort);
+            Double kcMaxLoss = calcKcMaxLoss(netLiq,
+                    Mediator.INSTANCE.getPercentCapitalToTradeByAccountNumber(Mediator.INSTANCE.getSelectedAccount()), kcPerPort);
             updateCellValue(rowList2.get(KCMAXLOSS.getIndex()), kcMaxLoss);
 
             //Calculate KC Contract # (KC-Qty)

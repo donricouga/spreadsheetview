@@ -77,7 +77,8 @@ public class TWSEndStreamEventHandler implements EventHandler<Event> {
         updateCellValue(rowList2.get(KCNETLOSSDOL.getIndex()), kcNetLoss$);
 
         //Calculate KC Max Loss
-        Double kcMaxLoss = calcKcMaxLoss(netLiq, kcPercentPort);
+        Double kcMaxLoss = calcKcMaxLoss(netLiq,
+                Mediator.INSTANCE.getPercentCapitalToTradeByAccountNumber(Mediator.INSTANCE.getSelectedAccount()), kcPercentPort);
         updateCellValue(rowList2.get(KCMAXLOSS.getIndex()), kcMaxLoss);
 
         //Calculate KC Contract# (KC-Qty)

@@ -5,12 +5,17 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.util.Duration;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
+import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+
+import static ca.riveros.ib.TableColumnIndexes.ACCOUNTNUM;
 
 /**
  * Created by admin on 11/13/16.
@@ -66,8 +71,8 @@ public class Common {
     }
 
     //KC Max Loss
-    public static Double calcKcMaxLoss(Double netLiq, Double kcPerPort) {
-        return netLiq * kcPerPort;
+    public static Double calcKcMaxLoss(Double netLiq, Double percentTraded, Double kcPerPort) {
+        return netLiq * percentTraded * kcPerPort;
     }
 
     //KC Contract # (KC - Qty)
@@ -134,6 +139,13 @@ public class Common {
         SpreadsheetCell cell = createCell(row,col,value,editable, cssClass, cl);
         cell.setFormat(format);
         return cell;
+    }
+
+    public static SpreadsheetCell findCellByAccountNumberAndColumn(SpreadsheetView spreadsheetView, String accountNum, Integer column) {
+        ObservableList<ObservableList<SpreadsheetCell>> cellList = spreadsheetView.getGrid().getRows();
+        Optional<ObservableList<SpreadsheetCell>> optionalList =
+                cellList.stream().filter(rowList -> accountNum.equals(rowList.get(ACCOUNTNUM.getIndex()).getItem())).findFirst();
+        return optionalList.get().get(column);
     }
 
 }

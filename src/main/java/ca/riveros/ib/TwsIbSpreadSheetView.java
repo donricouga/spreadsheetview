@@ -375,4 +375,19 @@ public class TwsIbSpreadSheetView extends Application {
         spreadsheetView3.setGrid(g3);
     }
 
+    public SpreadsheetView getSpreadsheetView() {
+        return spreadsheetView;
+    }
+
+    public SpreadsheetView getSpreadsheetView2() {
+        return spreadsheetView2;
+    }
+
+    public SpreadsheetView getSpreadsheetView3() {
+        return spreadsheetView3;
+    }
+
+    public SpreadsheetView getSpreadsheetView4() {
+        return spreadsheetView4;
+    }
 }

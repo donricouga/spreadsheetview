@@ -2,7 +2,9 @@ package ca.riveros.ib.handlers;
 
 import ca.riveros.ib.Mediator;
 import ca.riveros.ib.events.BTMarginEvent;
+import ca.riveros.ib.events.NetLiqEvent;
 import ca.riveros.ib.events.PercentSymbolEvent;
+import ca.riveros.ib.events.PercentTradedEvent;
 import com.ib.controller.AccountSummaryTag;
 import com.ib.controller.ApiController;
 import javafx.collections.FXCollections;
@@ -12,6 +14,7 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ca.riveros.ib.Common.calc$Symbol;
@@ -19,7 +22,9 @@ import static ca.riveros.ib.Common.calc$Traded;
 import static ca.riveros.ib.Common.calcContract;
 import static ca.riveros.ib.Common.createCell;
 import static ca.riveros.ib.Common.dollarFormat;
+import static ca.riveros.ib.Common.findCellByAccountNumberAndColumn;
 import static ca.riveros.ib.Common.twoPercentFormat;
+import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.ACCOUNTNUM;
 import static ca.riveros.ib.TableColumnIndexes.BTCONTRACT;
 import static ca.riveros.ib.TableColumnIndexes.BTMARGIN;
@@ -43,6 +48,8 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
     private Double totalInitMarginReq = 0.0;
     private Double totalNetLiq = 0.0;
 
+    private Boolean finishedInitialLoad = false;
+
     HashMap<String, String> accountNetLiqMap = new HashMap<>(15);
 
 
@@ -59,8 +66,16 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
             totalInitMarginReq = totalInitMarginReq + Double.valueOf(value);
         }
         if ("NetLiquidation".equals(tag.name())) {
-            inLogger.log("NET LIQ " + value + " FOR ACCOUNT " + account);
-            accountNetLiqMap.put(account, value);
+            if(!finishedInitialLoad) {
+                inLogger.log("NET LIQ " + value + " FOR ACCOUNT " + account + " INITIAL LOAD");
+                accountNetLiqMap.put(account, value);
+            }
+            else {
+                inLogger.log("NET LIQ " + value + " FOR ACCOUNT " + account);
+                mediator.getBlockTradingSpreadSheetView().getGrid().getRows();
+                updateCellValue(findCellByAccountNumberAndColumn(mediator.getBlockTradingSpreadSheetView(),
+                        account, NETLIQ.getIndex()), Double.valueOf(value));
+            }
             totalNetLiq = totalNetLiq + Double.valueOf(value);
 
         }
@@ -75,6 +90,7 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
         totalInitMarginReq = 0.0;
         totalNetLiq = 0.0;
         createInitialSheet();
+        finishedInitialLoad = true;
     }
 
     private void createInitialSheet() {
@@ -87,10 +103,13 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
             Double netLiq = Double.valueOf(v);
             rowsList.add(createCell(counter.intValue(),ACCOUNTNUM.getIndex(), k, false));
 
-            rowsList.add(createCell(counter.intValue(),NETLIQ.getIndex(), netLiq, false, dollarFormat));
+            rowsList.add(createCell(counter.intValue(),NETLIQ.getIndex(), netLiq, false,
+                    "", new NetLiqEvent(spreadsheetModelObservableList, mediator.getMainWindow().getSpreadsheetView(),
+                            mediator.getMainWindow().getSpreadsheetView2()), dollarFormat));
             Double percentTraded = getPercentTraded(k, 0.27);
 
-            rowsList.add(createCell(counter.intValue(),PERTRADED.getIndex(), getPercentTraded(k, 0.27), true, twoPercentFormat));
+            rowsList.add(createCell(counter.intValue(),PERTRADED.getIndex(), getPercentTraded(k, 0.27), true,
+                    "manualy", new PercentTradedEvent(spreadsheetModelObservableList, mediator.getSpreadSheetCells2()), twoPercentFormat));
             Double dollarTraded = calc$Traded(netLiq, percentTraded);
 
             rowsList.add(createCell(counter.intValue(),DOLTRADED.getIndex(), dollarTraded, false, dollarFormat));
@@ -115,4 +134,5 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
         g.setRows(spreadsheetModelObservableList);
         mediator.getBlockTradingSpreadSheetView().setGrid(g);
     }
+
 }

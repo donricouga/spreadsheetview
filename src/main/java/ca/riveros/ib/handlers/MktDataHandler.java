@@ -104,9 +104,6 @@ public class MktDataHandler implements ApiController.IOptHandler {
             }
         }
 
-        //We need to add the Account Net Liq Listener here because we want it to start listening after initial load
-        mediator.addAccountNetLiqChangeListener();
-
     }
 
     @Override
