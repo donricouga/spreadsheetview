@@ -2,19 +2,20 @@ package ca.riveros.ib.handlers;
 
 import ca.riveros.ib.Mediator;
 import ca.riveros.ib.events.BTMarginEvent;
-import ca.riveros.ib.events.NetLiqEvent;
+import ca.riveros.ib.events.NetLiqEventHandler;
 import ca.riveros.ib.events.PercentSymbolEvent;
 import ca.riveros.ib.events.PercentTradedEvent;
 import com.ib.controller.AccountSummaryTag;
 import com.ib.controller.ApiController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import org.controlsfx.control.spreadsheet.Grid;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
+import org.controlsfx.control.spreadsheet.SpreadsheetCellBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ca.riveros.ib.Common.calc$Symbol;
@@ -24,7 +25,6 @@ import static ca.riveros.ib.Common.createCell;
 import static ca.riveros.ib.Common.dollarFormat;
 import static ca.riveros.ib.Common.findCellByAccountNumberAndColumn;
 import static ca.riveros.ib.Common.twoPercentFormat;
-import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.ACCOUNTNUM;
 import static ca.riveros.ib.TableColumnIndexes.BTCONTRACT;
 import static ca.riveros.ib.TableColumnIndexes.BTMARGIN;
@@ -36,6 +36,7 @@ import static ca.riveros.ib.TableColumnIndexes.PERTRADED;
 import static ca.riveros.ib.data.PersistentFields.getMargin;
 import static ca.riveros.ib.data.PersistentFields.getPercentSymbol;
 import static ca.riveros.ib.data.PersistentFields.getPercentTraded;
+import static ca.riveros.ib.events.EventTypes.netLiqEventType;
 
 /**
  * Created by admin on 11/17/16.
@@ -72,9 +73,8 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
             }
             else {
                 inLogger.log("NET LIQ " + value + " FOR ACCOUNT " + account);
-                mediator.getBlockTradingSpreadSheetView().getGrid().getRows();
-                updateCellValue(findCellByAccountNumberAndColumn(mediator.getBlockTradingSpreadSheetView(),
-                        account, NETLIQ.getIndex()), Double.valueOf(value));
+                Event.fireEvent((SpreadsheetCellBase) findCellByAccountNumberAndColumn(mediator.getBlockTradingSpreadSheetView(),
+                        account, NETLIQ.getIndex()),  new Event(netLiqEventType));
             }
             totalNetLiq = totalNetLiq + Double.valueOf(value);
 
@@ -103,9 +103,9 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
             Double netLiq = Double.valueOf(v);
             rowsList.add(createCell(counter.intValue(),ACCOUNTNUM.getIndex(), k, false));
 
-            rowsList.add(createCell(counter.intValue(),NETLIQ.getIndex(), netLiq, false,
-                    "", new NetLiqEvent(spreadsheetModelObservableList, mediator.getMainWindow().getSpreadsheetView(),
-                            mediator.getMainWindow().getSpreadsheetView2()), dollarFormat));
+            SpreadsheetCell netLiqCell = createCell(counter.intValue(),NETLIQ.getIndex(), netLiq, false, dollarFormat);
+            netLiqCell.addEventHandler(netLiqEventType, new NetLiqEventHandler());
+            rowsList.add(netLiqCell);
             Double percentTraded = getPercentTraded(k, 0.27);
 
             rowsList.add(createCell(counter.intValue(),PERTRADED.getIndex(), getPercentTraded(k, 0.27), true,

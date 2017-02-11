@@ -1,7 +1,6 @@
 package ca.riveros.ib.handlers;
 
 import ca.riveros.ib.Mediator;
-import ca.riveros.ib.events.NetLiqChangeListener;
 import com.ib.client.Contract;
 import com.ib.client.TickType;
 import com.ib.client.Types;

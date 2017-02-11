@@ -2,13 +2,12 @@ package ca.riveros.ib.events;
 
 import ca.riveros.ib.Mediator;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
-import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ca.riveros.ib.Common.calc$Symbol;
@@ -27,40 +26,29 @@ import static ca.riveros.ib.TableColumnIndexes.KCEDGE;
 import static ca.riveros.ib.TableColumnIndexes.KCMAXLOSS;
 import static ca.riveros.ib.TableColumnIndexes.KCPERPORT;
 import static ca.riveros.ib.TableColumnIndexes.MARGIN;
+import static ca.riveros.ib.TableColumnIndexes.NETLIQ;
 import static ca.riveros.ib.TableColumnIndexes.PEROFPORT;
 import static ca.riveros.ib.TableColumnIndexes.PERSYMBOL;
 import static ca.riveros.ib.TableColumnIndexes.PERTRADED;
 import static ca.riveros.ib.TableColumnIndexes.QTY;
 import static ca.riveros.ib.TableColumnIndexes.QTYOPENCLOSE;
 
-public class NetLiqEvent implements ChangeListener<Object> {
-
-    private ObservableList<ObservableList<SpreadsheetCell>> blockTradingDataList;
-    private SpreadsheetView view;
-    private SpreadsheetView view2;
-
-
-
-    public NetLiqEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList,
-                       SpreadsheetView view, SpreadsheetView view2) {
-        this.blockTradingDataList = spreadsheetDataList;
-        this.view = view;
-        this.view2 = view2;
-    }
+/**
+ * Created by ricardo on 2/11/17.
+ */
+public class NetLiqEventHandler implements EventHandler<Event> {
 
     @Override
-    public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-        ObjectProperty base = (ObjectProperty) observable;
-        SpreadsheetCell c = (SpreadsheetCell) base.getBean();
-        int row = c.getRow();
-        ObservableList<SpreadsheetCell> rowList = blockTradingDataList.get(row);
+    public void handle(Event event) {
+        SpreadsheetCell cell = (SpreadsheetCell) event.getTarget();
+        List<SpreadsheetCell> blockTradingRow = Mediator.INSTANCE.getBlockTradingSpreadSheetView().getGrid().getRows().get(cell.getRow());
 
         //Get Needed Values
-        Double percentTraded = (Double) rowList.get(PERTRADED.getIndex()).getItem();
-        Double netLiq = (Double) newValue;
-        Double percentSymbol = (Double) rowList.get(PERSYMBOL.getIndex()).getItem();
-        Double margin = (Double)  rowList.get(BTMARGIN.getIndex()).getItem();
-        String accountNum = (String) rowList.get(ACCOUNTNUM.getIndex()).getItem();
+        Double percentTraded = (Double) blockTradingRow.get(PERTRADED.getIndex()).getItem();
+        Double netLiq = (Double) blockTradingRow.get(NETLIQ.getIndex()).getItem();
+        Double percentSymbol = (Double) blockTradingRow.get(PERSYMBOL.getIndex()).getItem();
+        Double margin = (Double) blockTradingRow.get(BTMARGIN.getIndex()).getItem();
+        String accountNum = (String) blockTradingRow.get(ACCOUNTNUM.getIndex()).getItem();
 
         //Now Calculate
         Double dolTraded = calc$Traded(netLiq, percentTraded);
@@ -68,14 +56,18 @@ public class NetLiqEvent implements ChangeListener<Object> {
         Double contract = calcContract(dolSymbol, margin);
 
         //Update Spreadsheet
-        updateCellValue(rowList.get(DOLTRADED.getIndex()), dolTraded);
-        updateCellValue(rowList.get(DOLSYMBOL.getIndex()), dolSymbol);
-        updateCellValue(rowList.get(BTCONTRACT.getIndex()), contract);
+        Platform.runLater(() -> {
+            updateCellValue(blockTradingRow.get(DOLTRADED.getIndex()), dolTraded);
+            updateCellValue(blockTradingRow.get(DOLSYMBOL.getIndex()), dolSymbol);
+            updateCellValue(blockTradingRow.get(BTCONTRACT.getIndex()), contract);
+            updateCellValue(blockTradingRow.get(NETLIQ.getIndex()), netLiq);
+        });
+
 
         //Also update rows based on whether the currently selected account is being displayed
         if(accountNum.equals(Mediator.INSTANCE.getSelectedAccount())) {
-            ObservableList<ObservableList<SpreadsheetCell>> list = view.getGrid().getRows();
-            ObservableList<ObservableList<SpreadsheetCell>> list2 = view2.getGrid().getRows();
+            ObservableList<ObservableList<SpreadsheetCell>> list = Mediator.INSTANCE.getSpreadSheetCells();
+            ObservableList<ObservableList<SpreadsheetCell>> list2 = Mediator.INSTANCE.getSpreadSheetCells2();
             AtomicInteger counter = new AtomicInteger(0);
             list.forEach(ssRow -> {
 
@@ -108,4 +100,6 @@ public class NetLiqEvent implements ChangeListener<Object> {
         }
 
     }
+
+
 }

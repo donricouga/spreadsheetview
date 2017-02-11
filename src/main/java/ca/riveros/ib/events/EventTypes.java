@@ -9,5 +9,6 @@ import javafx.event.EventType;
 public class EventTypes {
 
     public static EventType<Event> twsEndStreamEventType = new EventType<>(Event.ANY, "TWS_END_STREAM");
+    public static EventType<Event> netLiqEventType = new EventType<>(Event.ANY, "NET_LIQ_EVENT_TYPE");
 
 }
