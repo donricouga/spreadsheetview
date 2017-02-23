@@ -75,7 +75,7 @@ public class MktDataHandler implements ApiController.IOptHandler {
 
     @Override
     public void tickSnapshotEnd() {
-        ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData = mediator.getSpreadSheetCells();
+       /* ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData = mediator.getSpreadSheetCells();
         ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData3 = mediator.getSpreadSheetCells3();
         for(int i = 0; i < spreadSheetData.size(); i++) {
             ObservableList<SpreadsheetCell> list = spreadSheetData.get(i);
@@ -101,7 +101,7 @@ public class MktDataHandler implements ApiController.IOptHandler {
                     Event.fireEvent((SpreadsheetCellBase) midCell, new Event(twsEndStreamEventType));
                 });
             }
-        }
+        }*/
 
     }
 

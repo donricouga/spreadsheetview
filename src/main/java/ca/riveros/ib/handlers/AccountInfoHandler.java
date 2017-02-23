@@ -89,11 +89,7 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
 
     //Reference Data
     private String account;
-    //private Integer positionsCount;
-
-    //private List <SpreadsheetModel>positionsList = new ArrayList<>(30);
     private List<Position> positionsList = new ArrayList<>(30);
-
     private Boolean initialLoadComplete = false;
 
     public AccountInfoHandler(Mediator mediator, String account, Logger inLogger) {
@@ -125,6 +121,7 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
 
     @Override
     public void accountDownloadEnd(String account) {
+        inLogger.log("Finished receiving account stream");
         initialLoadComplete = true;
         addRowsToSpreadsheet();
     }
@@ -135,26 +132,25 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
         SearchEncapsulation se =
                 getSpreadsheetRowIfExists(position.account(), position.conid());
 
-        Optional<ObservableList<SpreadsheetCell>> optionalRow = se.row;
+        ObservableList<SpreadsheetCell> row3 = se.row;
         Integer index = se.rowIndex;
 
-        if (!optionalRow.isPresent() && !initialLoadComplete) {
+        if (row3 == null && !initialLoadComplete) {
             positionsList.add(position);
 
-            /*//Call Account Details
-            ContractDetailsHandler cdHandler = new ContractDetailsHandler(mediator, inLogger);
+            //Call Account Details
             Contract contract = position.contract();
 
             //Set Exchange to empty to let TWS decide what exchange to use.
             contract.exchange("");
             mediator.getConnectionHandler().getApiController().reqContractDetails(
-                    contract, contractDetailsHandler);*/
+                    contract, contractDetailsHandler);
         }
         else {
             //Get the relevant Spreadsheets needed for the update
-            ObservableList<SpreadsheetCell> row3 = optionalRow.get();
             ObservableList<SpreadsheetCell> row1 = Mediator.INSTANCE.getSpreadSheetCells().get(index);
-            updateSpreadsheet(row1, row3, position);
+            Platform.runLater(() -> updateSpreadsheet(row1, row3, position));
+
 
         }
     }
@@ -288,14 +284,13 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
 
     private SearchEncapsulation getSpreadsheetRowIfExists(String account, Integer contractId) {
         ObservableList<ObservableList<SpreadsheetCell>> rows = Mediator.INSTANCE.getSpreadSheetCells3();
-        AtomicInteger index = new AtomicInteger();
-        Optional<ObservableList<SpreadsheetCell>> result =
-                rows.stream().filter(row -> rows.size() <= index.incrementAndGet())
-                        .filter(row ->
-                                row.get(ACCOUNT.getIndex()).getItem().equals(account)
-                                        && row.get(CONTRACTID.getIndex()).getItem().equals(contractId))
-                        .findFirst();
-        return new SearchEncapsulation(result, index.get() - 1);
+        for(int i = 0; i < rows.size(); i++) {
+            ObservableList<SpreadsheetCell> row = rows.get(i);
+            if(row.get(CONTRACTID.getIndex()).getItem().equals(contractId) && row.get(ACCOUNT.getIndex()).getItem().equals(account)) {
+                return new SearchEncapsulation(row, i);
+            }
+        }
+        return new SearchEncapsulation(null, 0);
     }
 
 
@@ -358,10 +353,10 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
     }
 
     class SearchEncapsulation {
-        Optional<ObservableList<SpreadsheetCell>> row;
+        ObservableList<SpreadsheetCell> row;
         Integer rowIndex;
 
-        public SearchEncapsulation(Optional<ObservableList<SpreadsheetCell>> row, Integer rowIndex) {
+        public SearchEncapsulation(ObservableList<SpreadsheetCell> row, Integer rowIndex) {
             this.row = row;
             this.rowIndex = rowIndex;
         }
