@@ -16,6 +16,7 @@ import ca.riveros.ib.model.SpreadsheetModel;
 import com.ib.client.Contract;
 import com.ib.controller.ApiController;
 import com.ib.controller.Position;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.Grid;
@@ -91,12 +92,20 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
     //private Integer positionsCount;
 
     //private List <SpreadsheetModel>positionsList = new ArrayList<>(30);
+    private List<Position> positionsList = new ArrayList<>(30);
+
+    private Boolean initialLoadComplete;
 
     public AccountInfoHandler(Mediator mediator, String account, Logger inLogger) {
         this.inLogger = inLogger;
         this.mediator = mediator;
         this.account = account;
         contractDetailsHandler = new ContractDetailsHandler(mediator, inLogger);
+    }
+
+    public void reset(String account) {
+        this.account = account;
+        this.initialLoadComplete = false;
     }
 
     @Override
