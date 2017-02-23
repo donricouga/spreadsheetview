@@ -73,8 +73,8 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
             }
             else {
                 inLogger.log("NET LIQ " + value + " FOR ACCOUNT " + account);
-                Event.fireEvent((SpreadsheetCellBase) findCellByAccountNumberAndColumn(mediator.getBlockTradingSpreadSheetView(),
-                        account, NETLIQ.getIndex()),  new Event(netLiqEventType));
+                /*Event.fireEvent((SpreadsheetCellBase) findCellByAccountNumberAndColumn(mediator.getBlockTradingSpreadSheetView(),
+                        account, NETLIQ.getIndex()),  new Event(netLiqEventType));*/
             }
             totalNetLiq = totalNetLiq + Double.valueOf(value);
 

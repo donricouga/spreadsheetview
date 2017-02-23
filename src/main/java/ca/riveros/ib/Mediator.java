@@ -51,8 +51,9 @@ public class Mediator extends Application {
         mainWindow.start(primaryStage);
 
         //Get account summary data
-        connectionHandler.getApiController()
-                .reqAccountSummary("All", AccountSummaryTag.values(), new AccountSummaryHandler(this, inLogger));
+        //TODO MAKE THIS RUN AFTER ACCOUNT INFO HANDLER
+        /*connectionHandler.getApiController()
+                .reqAccountSummary("All", AccountSummaryTag.values(), new AccountSummaryHandler(this, inLogger));*/
     }
 
     /**
@@ -73,16 +74,10 @@ public class Mediator extends Application {
         //Only one instance of a handler should exist.
         if(accountInfoHandler == null)
             accountInfoHandler = new AccountInfoHandler(this, account, inLogger);
+        else
+            accountInfoHandler.setAccount(account);
 
         connectionHandler.getApiController().reqAccountUpdates(true, account, accountInfoHandler);
-    }
-
-    /**
-     * Lets the Account Update Handler add the results of the reqAccountUpdates() API to the SpreadsheetView Grid
-     * @param list
-     */
-    public void updateSpreadsheetViewGrid(List<SpreadsheetModel> list ) {
-        mainWindow.updateSpreadsheetViewGrid(list);
     }
 
     public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells() {
@@ -95,6 +90,10 @@ public class Mediator extends Application {
 
     public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells3() {
         return mainWindow.spreadsheetView3.getGrid().getRows();
+    }
+
+    public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells4() {
+        return mainWindow.spreadsheetView4.getGrid().getRows();
     }
 
     public SpreadsheetView getBlockTradingSpreadSheetView(){

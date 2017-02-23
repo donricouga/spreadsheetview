@@ -1,12 +1,15 @@
 package ca.riveros.ib;
 
+import ca.riveros.ib.events.RowChangeListener;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Duration;
+import org.controlsfx.control.spreadsheet.Grid;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
@@ -131,7 +134,8 @@ public class Common {
     public static SpreadsheetCell createCell(int row, int col, Double value, Boolean editable, String cssClass, ChangeListener cl) {
         SpreadsheetCell cell = createCell(row,col,value,editable);
         cell.getStyleClass().add(cssClass);
-        cell.itemProperty().addListener(cl);
+        if(cl != null)
+            cell.itemProperty().addListener(cl);
         return cell;
     }
 
