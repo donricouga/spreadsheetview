@@ -74,8 +74,9 @@ public class Mediator extends Application {
         //Only one instance of a handler should exist.
         if(accountInfoHandler == null)
             accountInfoHandler = new AccountInfoHandler(this, account, inLogger);
-        else
-            accountInfoHandler.setAccount(account);
+        else {
+            accountInfoHandler.reset(account);
+        }
 
         connectionHandler.getApiController().reqAccountUpdates(true, account, accountInfoHandler);
     }

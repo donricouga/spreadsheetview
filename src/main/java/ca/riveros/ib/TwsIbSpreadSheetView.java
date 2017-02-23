@@ -149,7 +149,7 @@ public class TwsIbSpreadSheetView extends Application {
 
     private SpreadsheetView createSpreadsheetViews(List<String> columnData) {
         GridBase grid = new GridBase(1, columnData.size());
-        grid.setRowHeightCallback(new GridBase.MapBasedRowHeightFactory(generateRowHeight()));
+        //grid.setRowHeightCallback(new GridBase.MapBasedRowHeightFactory(generateRowHeight()));
         ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
         for (int row = 0; row < grid.getRowCount(); ++row) {
             final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
@@ -181,11 +181,11 @@ public class TwsIbSpreadSheetView extends Application {
         return spv;
     }
 
-    private Map<Integer, Double> generateRowHeight() {
+    /*private Map<Integer, Double> generateRowHeight() {
         Map<Integer, Double> rowHeight = new HashMap<>();
         rowHeight.put(1, 100.0);
         return rowHeight;
-    }
+    }*/
 
     private TabPane createTabs() {
         TabPane tabPane = new TabPane();
