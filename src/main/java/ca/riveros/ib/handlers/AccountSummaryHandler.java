@@ -25,16 +25,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static ca.riveros.ib.Common.calc$Symbol;
 import static ca.riveros.ib.Common.calc$Traded;
 import static ca.riveros.ib.Common.calcContract;
+import static ca.riveros.ib.Common.calcPerOfPort;
 import static ca.riveros.ib.Common.createCell;
 import static ca.riveros.ib.Common.dollarFormat;
 import static ca.riveros.ib.Common.findCellByAccountNumberAndColumn;
 import static ca.riveros.ib.Common.twoPercentFormat;
+import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.ACCOUNTNUM;
 import static ca.riveros.ib.TableColumnIndexes.BTCONTRACT;
 import static ca.riveros.ib.TableColumnIndexes.BTMARGIN;
 import static ca.riveros.ib.TableColumnIndexes.DOLSYMBOL;
 import static ca.riveros.ib.TableColumnIndexes.DOLTRADED;
+import static ca.riveros.ib.TableColumnIndexes.MARGIN;
 import static ca.riveros.ib.TableColumnIndexes.NETLIQ;
+import static ca.riveros.ib.TableColumnIndexes.PEROFPORT;
 import static ca.riveros.ib.TableColumnIndexes.PERSYMBOL;
 import static ca.riveros.ib.TableColumnIndexes.PERTRADED;
 import static ca.riveros.ib.data.PersistentFields.getMargin;
@@ -50,13 +54,8 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
     private Mediator mediator;
     private Logger inLogger;
 
-    private Double totalInitMarginReq = 0.0;
-    private Double totalNetLiq = 0.0;
-
-    private Boolean finishedInitialLoad = false;
-
-    Map<String, Double> initMarginReqMap = new HashMap<>(15);
-    Map<String, Double> netLiqMap = new HashMap<>(15);
+    private Map<String, Double> initMarginReqMap = new HashMap<>(15);
+    private Map<String, Double> netLiqMap = new HashMap<>(15);
 
 
     public AccountSummaryHandler(Mediator mediator, Logger inLogger) {
@@ -82,13 +81,7 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
 
     @Override
     public void accountSummaryEnd() {
-        /*inLogger.log("Finished downloading account summary.");
-        mediator.updateTotalInitMargin(totalInitMarginReq.toString());
-        mediator.updateTotalNetLiq(totalNetLiq.toString());
-        totalInitMarginReq = 0.0;
-        totalNetLiq = 0.0;
-        createInitialSheet();
-        finishedInitialLoad = true;*/
+        inLogger.log("Finished downloading account summary.");
     }
 
     private void updateTotalInitMargin() {
@@ -98,8 +91,6 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
             totalInitMargin+= iterator.next();
         }
         mediator.updateTotalInitMargin(totalInitMargin);
-
-        //TODO Also need to update a value in the spreadsheetview to trigger a recalculate.
     }
 
     private void updateTotalNetLiq() {
@@ -110,7 +101,18 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
         }
         mediator.updateTotalNetLiq(totalNetLiq);
 
-        //TODO Also need to update a value in the spreadsheetview to trigger a recalculate.
+        final Double tnl = totalNetLiq;
+
+        //Also need to update a value in the spreadsheetview to trigger a recalculate of that row.
+        ObservableList<ObservableList<SpreadsheetCell>> rows = Mediator.INSTANCE.getSpreadSheetCells();
+        rows.forEach(row -> {
+            Double margin = (Double) row.get(MARGIN.getIndex()).getItem();
+            Double perOfPort = calcPerOfPort(margin, tnl);
+            SpreadsheetCell cell = row.get(PEROFPORT.getIndex());
+            updateCellValue(cell, perOfPort);
+            row.set(PEROFPORT.getIndex(), cell);
+        });
+
     }
 
 }

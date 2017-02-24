@@ -43,7 +43,7 @@ public class RowChangeListener implements ListChangeListener<SpreadsheetCell> {
         Double ask = (Double) row3.get(ASK.getIndex()).getItem();
         Double entry$ = (Double) row.get(ENTRYDOL.getIndex()).getItem();
 
-        //Update table
+        //Update table. Do need to do % of Port since the account summary handler does that already.
         Platform.runLater(() -> {
             updateCellValue(row.get(MID.getIndex()), calcMid(bid,ask));
         });

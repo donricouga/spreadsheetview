@@ -157,41 +157,47 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
         else {
             //Get the relevant Spreadsheets needed for the update
             ObservableList<SpreadsheetCell> row1 = Mediator.INSTANCE.getSpreadSheetCells().get(index);
-            Platform.runLater(() -> updateSpreadsheet(row1, row3, position));
+            ObservableList<SpreadsheetCell> row2 = Mediator.INSTANCE.getSpreadSheetCells2().get(index);
+            Platform.runLater(() -> updateSpreadsheet(row1, row2,  row3, position));
 
 
         }
     }
 
 
-    private void updateSpreadsheet(ObservableList<SpreadsheetCell> row, ObservableList<SpreadsheetCell> row3, Position pos) {
+    private void updateSpreadsheet(ObservableList<SpreadsheetCell> row, ObservableList<SpreadsheetCell> row2,
+                                   ObservableList<SpreadsheetCell> row3, Position pos) {
 
         //Update Entry$
         SpreadsheetCell entry$Cell = row.get(ENTRYDOL.getIndex());
         updateCellValue(entry$Cell, calculateAvgCost(pos.contract(), pos.averageCost()));
-        row.set(ENTRYDOL.getIndex(), entry$Cell);
+        //row.set(ENTRYDOL.getIndex(), entry$Cell);
+
+        SpreadsheetCell kcCreditReceived = row2.get(KCCREDITREC.getIndex());
+        updateCellValue(kcCreditReceived, calculateAvgCost(pos.contract(), pos.averageCost()));
+        //row2.set(KCCREDITREC.getIndex(), kcCreditReceived);
 
         //Update Qty
         SpreadsheetCell qtyCell = row.get(QTY.getIndex());
         updateCellValue(qtyCell, (double) pos.position());
-        row.set(QTY.getIndex(), qtyCell);
+        //row.set(QTY.getIndex(), qtyCell);
 
         //Update Market$
         SpreadsheetCell market$Cell = row3.get(MARKETDOL.getIndex());
         updateCellValue(market$Cell, pos.marketPrice());
-        row3.set(MARKETDOL.getIndex(), market$Cell);
+        //row3.set(MARKETDOL.getIndex(), market$Cell);
 
         //Update Notional
         SpreadsheetCell notionalCell = row3.get(NOTIONAL.getIndex());
         updateCellValue(notionalCell, pos.marketValue());
-        row3.set(NOTIONAL.getIndex(), notionalCell);
+        //row3.set(NOTIONAL.getIndex(), notionalCell);
 
         //Update RealPL
         SpreadsheetCell realPlCell = row.get(REALPNL.getIndex());
         updateCellValue(realPlCell, pos.realPnl());
-        row.set(REALPNL.getIndex(), realPlCell);
+        //row.set(REALPNL.getIndex(), realPlCell);
 
-        //Update UnrealPL
+        //Update UnrealPL and do a row.set to trigger the row to be all recalculated
         SpreadsheetCell unrealPlCell = row.get(UNREALPNL.getIndex());
         updateCellValue(unrealPlCell, pos.unrealPnl());
         row.set(UNREALPNL.getIndex(), unrealPlCell);

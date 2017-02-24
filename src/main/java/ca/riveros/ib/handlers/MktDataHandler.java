@@ -26,12 +26,6 @@ public class MktDataHandler implements ApiController.IOptHandler {
     //Logger
     private Logger logger;
 
-    //Main BID AND ASK DATA
-    private Double bid = 0.0;
-    private Double ask = 0.0;
-    private Double delta = 0.0;
-    private Double impliedVol = 0.0;
-
     /**
      * Contract ID for this Mkt Request
      **/
@@ -47,8 +41,8 @@ public class MktDataHandler implements ApiController.IOptHandler {
     public void tickOptionComputation(TickType tickType, double impliedVol, double delta, double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice) {
         if (TickType.ASK_OPTION.equals(tickType)) {
             logger.log("Received " + TickType.ASK_OPTION + " with delta " + delta + " and implied volatility " + impliedVol);
-            this.delta = delta;
-            this.impliedVol = impliedVol;
+            updateField(contract.conid(), DELTA.getIndex(), delta, false);
+            updateField(contract.conid(), IMPVOLPER.getIndex(), impliedVol, false);
         }
     }
 
@@ -56,29 +50,30 @@ public class MktDataHandler implements ApiController.IOptHandler {
     public void tickPrice(TickType tickType, double price, int canAutoExecute) {
         if ("BID".equals(tickType.name())) {
             logger.log("Received BID price at " + price + " for account " + contract.description() + " " + contract.conid());
-            updateField(contract.conid(), BID.getIndex(), price);
+            updateField(contract.conid(), BID.getIndex(), price, true);
         } else if ("ASK".equals(tickType.name())) {
             logger.log("Received ASK price at " + price + " for account " + contract.description() + " " + contract.conid());
-            updateField(contract.conid(), ASK.getIndex(), price);
+            updateField(contract.conid(), ASK.getIndex(), price, true);
         }
     }
 
-    private void updateField(Integer contractId, Integer index, Double value) {
+    private void updateField(Integer contractId, Integer index, Double value, Boolean fireRecalculations) {
         ObservableList<ObservableList<SpreadsheetCell>> rows = Mediator.INSTANCE.getSpreadSheetCells3();
         for (int i = 0; i < rows.size(); i++) {
             ObservableList<SpreadsheetCell> row = rows.get(i);
             if (row.get(CONTRACTID.getIndex()).getItem().equals(contractId)) {
-                updateCellByIndex(row, index, value);
+                updateCellByIndex(row, index, value, fireRecalculations);
             }
         }
 
     }
 
-    private void updateCellByIndex(ObservableList<SpreadsheetCell> row, Integer index, Double value) {
+    private void updateCellByIndex(ObservableList<SpreadsheetCell> row, Integer index, Double value, Boolean fireRecalculations) {
         Platform.runLater(() -> {
             SpreadsheetCell cell = row.get(index);
             updateCellValue(cell, value);
-            row.set(index, cell);
+            if(fireRecalculations)
+                row.set(index, cell);
         });
     }
 
@@ -101,10 +96,4 @@ public class MktDataHandler implements ApiController.IOptHandler {
 
     }
 
-    private Double calculatePercentPL(Double mid, Double entry$) {
-        if (entry$ < 0)
-            return (entry$ - mid) / entry$;
-        else
-            return (mid - entry$) / entry$;
-    }
 }
