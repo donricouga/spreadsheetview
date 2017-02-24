@@ -14,6 +14,7 @@ import ca.riveros.ib.events.RowChangeListener;
 import ca.riveros.ib.events.TWSEndStreamEventHandler;
 import ca.riveros.ib.model.SpreadsheetModel;
 import com.ib.client.Contract;
+import com.ib.controller.AccountSummaryTag;
 import com.ib.controller.ApiController;
 import com.ib.controller.Position;
 import javafx.application.Platform;
@@ -119,11 +120,18 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
         inLogger.log("Received account information at " + timeStamp);
     }
 
+    /**
+     * This only gets executed once!!!!!!
+     * @param account
+     */
     @Override
     public void accountDownloadEnd(String account) {
         inLogger.log("Finished receiving account stream");
         initialLoadComplete = true;
         addRowsToSpreadsheet();
+        mediator.getConnectionHandler().getApiController()
+                .reqAccountSummary("All", AccountSummaryTag.values(), new AccountSummaryHandler(mediator, inLogger));
+
     }
 
     @Override

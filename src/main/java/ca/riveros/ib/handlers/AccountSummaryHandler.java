@@ -15,7 +15,11 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ca.riveros.ib.Common.calc$Symbol;
@@ -51,7 +55,8 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
 
     private Boolean finishedInitialLoad = false;
 
-    HashMap<String, String> accountNetLiqMap = new HashMap<>(15);
+    Map<String, Double> initMarginReqMap = new HashMap<>(15);
+    Map<String, Double> netLiqMap = new HashMap<>(15);
 
 
     public AccountSummaryHandler(Mediator mediator, Logger inLogger) {
@@ -64,75 +69,48 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
 
         if ("InitMarginReq".equals(tag.name())) {
             inLogger.log("INIT MARGIN REQ " + value + " FOR ACCOUNT " + account);
-            totalInitMarginReq = totalInitMarginReq + Double.valueOf(value);
+            initMarginReqMap.put(account, Double.valueOf(value));
+            updateTotalInitMargin();
         }
         if ("NetLiquidation".equals(tag.name())) {
-            if(!finishedInitialLoad) {
-                inLogger.log("NET LIQ " + value + " FOR ACCOUNT " + account + " INITIAL LOAD");
-                accountNetLiqMap.put(account, value);
-            }
-            else {
-                inLogger.log("NET LIQ " + value + " FOR ACCOUNT " + account);
-                /*Event.fireEvent((SpreadsheetCellBase) findCellByAccountNumberAndColumn(mediator.getBlockTradingSpreadSheetView(),
-                        account, NETLIQ.getIndex()),  new Event(netLiqEventType));*/
-            }
-            totalNetLiq = totalNetLiq + Double.valueOf(value);
-
+            inLogger.log("NET LIQ " + value + " FOR ACCOUNT " + account);
+            netLiqMap.put(account, Double.valueOf(value));
+            updateTotalNetLiq();
         }
 
     }
 
     @Override
     public void accountSummaryEnd() {
-        inLogger.log("Finished downloading account summary.");
+        /*inLogger.log("Finished downloading account summary.");
         mediator.updateTotalInitMargin(totalInitMarginReq.toString());
         mediator.updateTotalNetLiq(totalNetLiq.toString());
         totalInitMarginReq = 0.0;
         totalNetLiq = 0.0;
         createInitialSheet();
-        finishedInitialLoad = true;
+        finishedInitialLoad = true;*/
     }
 
-    private void createInitialSheet() {
-        SpreadsheetView blockTrading = mediator.getBlockTradingSpreadSheetView();
-        Grid g = blockTrading.getGrid();
-        ObservableList<ObservableList<SpreadsheetCell>> spreadsheetModelObservableList = FXCollections.observableArrayList();
-        AtomicInteger counter = new AtomicInteger(0);
-        accountNetLiqMap.forEach((k,v) -> {
-            ObservableList<SpreadsheetCell> rowsList = FXCollections.observableArrayList();
-            Double netLiq = Double.valueOf(v);
-            rowsList.add(createCell(counter.intValue(),ACCOUNTNUM.getIndex(), k, false));
+    private void updateTotalInitMargin() {
+        Double totalInitMargin = 0.0;
+        Collection<Double> values = initMarginReqMap.values();
+        for(Iterator <Double>iterator = values.iterator(); iterator.hasNext();) {
+            totalInitMargin+= iterator.next();
+        }
+        mediator.updateTotalInitMargin(totalInitMargin);
 
-            SpreadsheetCell netLiqCell = createCell(counter.intValue(),NETLIQ.getIndex(), netLiq, false, dollarFormat);
-            netLiqCell.addEventHandler(netLiqEventType, new NetLiqEventHandler());
-            rowsList.add(netLiqCell);
-            Double percentTraded = getPercentTraded(k, 0.27);
+        //TODO Also need to update a value in the spreadsheetview to trigger a recalculate.
+    }
 
-            rowsList.add(createCell(counter.intValue(),PERTRADED.getIndex(), getPercentTraded(k, 0.27), true,
-                    "manualy", new PercentTradedEvent(spreadsheetModelObservableList, mediator.getSpreadSheetCells2()), twoPercentFormat));
-            Double dollarTraded = calc$Traded(netLiq, percentTraded);
+    private void updateTotalNetLiq() {
+        Double totalNetLiq = 0.0;
+        Collection<Double> values = netLiqMap.values();
+        for(Iterator <Double>iterator = values.iterator(); iterator.hasNext();) {
+            totalNetLiq+= iterator.next();
+        }
+        mediator.updateTotalNetLiq(totalNetLiq);
 
-            rowsList.add(createCell(counter.intValue(),DOLTRADED.getIndex(), dollarTraded, false, dollarFormat));
-            Double percentSymbol = getPercentSymbol(k, 0.012);
-
-            rowsList.add(createCell(counter.intValue(),PERSYMBOL.getIndex(), percentSymbol, true,
-                    "manualy", new PercentSymbolEvent(spreadsheetModelObservableList), twoPercentFormat));
-            Double dollarSymbol = calc$Symbol(dollarTraded, percentSymbol);
-
-            rowsList.add(createCell(counter.intValue(),DOLSYMBOL.getIndex(), dollarSymbol , false, dollarFormat));
-            Double margin = getMargin(k, 1600.00);
-
-            rowsList.add(createCell(counter.intValue(),BTMARGIN.getIndex(), margin, true,
-                    "manualy", new BTMarginEvent(spreadsheetModelObservableList)));
-
-            rowsList.add(createCell(counter.intValue(),BTCONTRACT.getIndex(), calcContract(dollarSymbol, margin), false));
-
-            spreadsheetModelObservableList.add(rowsList);
-            counter.incrementAndGet();
-        });
-
-        g.setRows(spreadsheetModelObservableList);
-        mediator.getBlockTradingSpreadSheetView().setGrid(g);
+        //TODO Also need to update a value in the spreadsheetview to trigger a recalculate.
     }
 
 }

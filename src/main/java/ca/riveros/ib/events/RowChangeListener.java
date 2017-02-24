@@ -16,6 +16,7 @@ import static ca.riveros.ib.Common.calcMid;
 import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.ASK;
 import static ca.riveros.ib.TableColumnIndexes.BID;
+import static ca.riveros.ib.TableColumnIndexes.ENTRYDOL;
 import static ca.riveros.ib.TableColumnIndexes.MID;
 
 /**
@@ -40,6 +41,7 @@ public class RowChangeListener implements ListChangeListener<SpreadsheetCell> {
         //Get Data that is update from Interactive Brokers (TWS)
         Double bid = (Double) row3.get(BID.getIndex()).getItem();
         Double ask = (Double) row3.get(ASK.getIndex()).getItem();
+        Double entry$ = (Double) row.get(ENTRYDOL.getIndex()).getItem();
 
         //Update table
         Platform.runLater(() -> {

@@ -123,16 +123,16 @@ public class Mediator extends Application {
      * Update the total net Liq for all accounts
      * @return
      */
-    public void updateTotalNetLiq(String value) {
-        mainWindow.totalNetLiqTextField.setText(value);
+    public void updateTotalNetLiq(Double value) {
+        mainWindow.totalNetLiqTextField.setText(value.toString());
     }
 
     /**
      * Update the total Init Margin for all accounts
      * @return
      */
-    public void updateTotalInitMargin(String value) {
-        mainWindow.totalInitMarginTextField.setText(value);
+    public void updateTotalInitMargin(Double value) {
+        mainWindow.totalInitMarginTextField.setText(value.toString());
     }
 
     /**
