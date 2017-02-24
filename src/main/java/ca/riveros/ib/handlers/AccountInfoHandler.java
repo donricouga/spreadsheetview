@@ -267,7 +267,14 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
             rowsList3.add(SpreadsheetCellType.INTEGER.createCell(counter.intValue(), CONTRACTID.getIndex(), 1, 1, pos.conid()));
             rowsList3.add(SpreadsheetCellType.STRING.createCell(counter.intValue(), SYMBOL.getIndex(), 1, 1, pos.contract().symbol()));
             rowsList3.add(SpreadsheetCellType.STRING.createCell(counter.intValue(), ACCOUNT.getIndex(), 1, 1, pos.account()));
+
+            //Add Listeners
+            rowsList.addListener(new RowChangeListener(counter.get()));
+            rowsList2.addListener(new RowChangeListener(counter.get()));
+            rowsList3.addListener(new RowChangeListener(counter.get()));
+
             counter.incrementAndGet();
+
             spreadsheetModelObservableList.add(rowsList);
             spreadsheetModelObservableList2.add(rowsList2);
             spreadsheetModelObservableList3.add(rowsList3);

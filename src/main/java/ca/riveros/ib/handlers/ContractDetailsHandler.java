@@ -33,7 +33,7 @@ public class ContractDetailsHandler implements ApiController.IContractDetailsHan
         if(hasElements.test(list)) {
             Contract contract = list.get(0).contract();
             MktDataHandler mktDataHandler = new MktDataHandler(mediator, inLogger, contract);
-            mediator.getConnectionHandler().getApiController().reqOptionMktData(list.get(0).contract(), "", true, mktDataHandler);
+            mediator.getConnectionHandler().getApiController().reqOptionMktData(list.get(0).contract(), "", false, mktDataHandler);
         }
     }
 }

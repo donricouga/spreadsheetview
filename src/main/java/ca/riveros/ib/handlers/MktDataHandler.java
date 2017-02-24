@@ -56,11 +56,30 @@ public class MktDataHandler implements ApiController.IOptHandler {
     public void tickPrice(TickType tickType, double price, int canAutoExecute) {
         if ("BID".equals(tickType.name())) {
             logger.log("Received BID price at " + price + " for account " + contract.description() + " " + contract.conid());
-            bid = price;
+            updateField(contract.conid(), BID.getIndex(), price);
         } else if ("ASK".equals(tickType.name())) {
             logger.log("Received ASK price at " + price + " for account " + contract.description() + " " + contract.conid());
-            ask = price;
+            updateField(contract.conid(), ASK.getIndex(), price);
         }
+    }
+
+    private void updateField(Integer contractId, Integer index, Double value) {
+        ObservableList<ObservableList<SpreadsheetCell>> rows = Mediator.INSTANCE.getSpreadSheetCells3();
+        for (int i = 0; i < rows.size(); i++) {
+            ObservableList<SpreadsheetCell> row = rows.get(i);
+            if (row.get(CONTRACTID.getIndex()).getItem().equals(contractId)) {
+                updateCellByIndex(row, index, value);
+            }
+        }
+
+    }
+
+    private void updateCellByIndex(ObservableList<SpreadsheetCell> row, Integer index, Double value) {
+        Platform.runLater(() -> {
+            SpreadsheetCell cell = row.get(index);
+            updateCellValue(cell, value);
+            row.set(index, cell);
+        });
     }
 
     @Override
@@ -75,34 +94,6 @@ public class MktDataHandler implements ApiController.IOptHandler {
 
     @Override
     public void tickSnapshotEnd() {
-       /* ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData = mediator.getSpreadSheetCells();
-        ObservableList<ObservableList<SpreadsheetCell>> spreadSheetData3 = mediator.getSpreadSheetCells3();
-        for(int i = 0; i < spreadSheetData.size(); i++) {
-            ObservableList<SpreadsheetCell> list = spreadSheetData.get(i);
-            ObservableList<SpreadsheetCell> list3 = spreadSheetData3.get(i);
-
-            if ((Integer) list3.get(CONTRACTID.getIndex()).getItem() == contract.conid()) {
-                Platform.runLater(() -> {
-                    updateCellValue(list3.get(BID.getIndex()), bid);
-                    updateCellValue(list3.get(ASK.getIndex()), ask);
-                    Double mid = (bid + ask) / 2;
-                    logger.log("Setting Mid Price for " + contract.description() + " " + contract.conid() + " to " + mid);
-                    SpreadsheetCell midCell = list.get(MID.getIndex());
-                    SpreadsheetCell perPl = list3.get(PERPL.getIndex());
-                    SpreadsheetCell deltaCell = list3.get(DELTA.getIndex());
-                    SpreadsheetCell impVolCell = list3.get(IMPVOLPER.getIndex());
-                    Double entry$ = (Double) list.get(ENTRYDOL.getIndex()).getItem();
-                    updateCellValue(midCell, mid);
-                    updateCellValue(perPl, calculatePercentPL(mid, entry$));
-                    updateCellValue(impVolCell, this.impliedVol);
-                    updateCellValue(deltaCell, this.delta);
-
-                    //After all the data is passed in by tws, fire an event to begin calculations of each row.
-                    Event.fireEvent((SpreadsheetCellBase) midCell, new Event(twsEndStreamEventType));
-                });
-            }
-        }*/
-
     }
 
     @Override

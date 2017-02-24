@@ -276,12 +276,12 @@ public class TwsIbSpreadSheetView extends Application {
     }
 
     private void hideUnecessaryColumns() {
-        spreadsheetView3.getColumns().get(BID.getIndex()).setMaxWidth(0);
+        /*spreadsheetView3.getColumns().get(BID.getIndex()).setMaxWidth(0);
         spreadsheetView3.getColumns().get(BID.getIndex()).setPrefWidth(0);
         spreadsheetView3.getColumns().get(BID.getIndex()).setMinWidth(0);
         spreadsheetView3.getColumns().get(ASK.getIndex()).setMaxWidth(0);
         spreadsheetView3.getColumns().get(ASK.getIndex()).setPrefWidth(0);
-        spreadsheetView3.getColumns().get(ASK.getIndex()).setMinWidth(0);
+        spreadsheetView3.getColumns().get(ASK.getIndex()).setMinWidth(0);*/
         spreadsheetView3.getColumns().get(CONTRACTID.getIndex()).setMaxWidth(0);
         spreadsheetView3.getColumns().get(CONTRACTID.getIndex()).setPrefWidth(0);
         spreadsheetView3.getColumns().get(CONTRACTID.getIndex()).setMinWidth(0);

@@ -41,6 +41,11 @@ public class Common {
         cell.setEditable(false);
     }
 
+    //Calculate Mid
+    public static Double calcMid(Double bid, Double ask) {
+        return (bid + ask) / 2;
+    }
+
     //% of Port
     public static Double calcPerOfPort(Double margin, Double netLiq) {
         if(netLiq == 0)

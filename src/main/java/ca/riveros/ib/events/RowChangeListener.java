@@ -1,6 +1,8 @@
 package ca.riveros.ib.events;
 
 import ca.riveros.ib.Common;
+import ca.riveros.ib.Mediator;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -10,16 +12,39 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ca.riveros.ib.Common.calcMid;
 import static ca.riveros.ib.Common.updateCellValue;
+import static ca.riveros.ib.TableColumnIndexes.ASK;
+import static ca.riveros.ib.TableColumnIndexes.BID;
+import static ca.riveros.ib.TableColumnIndexes.MID;
 
 /**
  * Created by ricardo on 2/11/17.
  */
 public class RowChangeListener implements ListChangeListener<SpreadsheetCell> {
 
+    private Integer index;
+
+    public RowChangeListener(Integer index) {
+        this.index = index;
+    }
 
     @Override
-    public void onChanged(Change<? extends SpreadsheetCell> c) {
+    public void onChanged(ListChangeListener.Change<? extends SpreadsheetCell> c) {
+        List<SpreadsheetCell> row = Mediator.INSTANCE.getSpreadSheetCells().get(index);
+        List<SpreadsheetCell> row2 = Mediator.INSTANCE.getSpreadSheetCells2().get(index);
+        List<SpreadsheetCell> row3 = Mediator.INSTANCE.getSpreadSheetCells3().get(index);
+
+        //Now simply update the cells without trigerring the RowChangeListener.
+
+        //Get Data that is update from Interactive Brokers (TWS)
+        Double bid = (Double) row3.get(BID.getIndex()).getItem();
+        Double ask = (Double) row3.get(ASK.getIndex()).getItem();
+
+        //Update table
+        Platform.runLater(() -> {
+            updateCellValue(row.get(MID.getIndex()), calcMid(bid,ask));
+        });
 
     }
 
