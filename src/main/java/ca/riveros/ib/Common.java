@@ -114,6 +114,14 @@ public class Common {
         return perTraded * netLiq;
     }
 
+    public static Double calcPerPL(Double entry$, Double mid) {
+        if(entry$ == 0) return 0.0;
+        if(entry$ < 0)
+            return (entry$ - mid) / entry$;
+        else
+            return (mid - entry$) / entry$;
+    }
+
 
     ////// UI
 

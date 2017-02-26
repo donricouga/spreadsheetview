@@ -30,7 +30,7 @@ public class Mediator extends Application {
     private AccountInfoHandler accountInfoHandler;
     private String selectedAccount;
 
-    private Boolean addedAccountNetLiqHandler = false;
+    private Boolean accountDataLoaded = false;
 
     public Mediator() {
         mainWindow = new TwsIbSpreadSheetView(this);
@@ -51,9 +51,8 @@ public class Mediator extends Application {
         mainWindow.start(primaryStage);
 
         //Get account summary data
-        //TODO MAKE THIS RUN AFTER ACCOUNT INFO HANDLER
-        /*connectionHandler.getApiController()
-                .reqAccountSummary("All", AccountSummaryTag.values(), new AccountSummaryHandler(this, inLogger));*/
+        connectionHandler.getApiController()
+                .reqAccountSummary("All", AccountSummaryTag.values(), new AccountSummaryHandler(this, inLogger));
     }
 
     /**
@@ -72,8 +71,10 @@ public class Mediator extends Application {
         this.selectedAccount = account;
 
         //Only one instance of a handler should exist.
-        if(accountInfoHandler == null)
+        if(accountInfoHandler == null) {
             accountInfoHandler = new AccountInfoHandler(this, account, inLogger);
+            accountDataLoaded = true;
+        }
         else {
             accountInfoHandler.reset(account);
         }
@@ -145,6 +146,10 @@ public class Mediator extends Application {
         } catch(NumberFormatException nfe) {
             return 0.0;
         }
+    }
+
+    public Boolean isAccountDataLoaded() {
+        return accountDataLoaded;
     }
 
     public ConnectionHandler getConnectionHandler() {

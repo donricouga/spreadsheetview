@@ -121,7 +121,7 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
     }
 
     /**
-     * This only gets executed once!!!!!!
+     * This only gets executed once!!!!!! If this ever changes, the logic will break.
      * @param account
      */
     @Override
@@ -129,9 +129,6 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
         inLogger.log("Finished receiving account stream");
         initialLoadComplete = true;
         addRowsToSpreadsheet();
-        mediator.getConnectionHandler().getApiController()
-                .reqAccountSummary("All", AccountSummaryTag.values(), new AccountSummaryHandler(mediator, inLogger));
-
     }
 
     @Override
@@ -240,9 +237,9 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
             rowsList.add(unrealPNLCell);
             SpreadsheetCell realPNLCell = createCell(counter.intValue(), REALPNL.getIndex(), pos.realPnl(), false, dollarFormat);
             if (pos.realPnl() > 0)
-                unrealPNLCell.getStyleClass().add("positive");
+                realPNLCell.getStyleClass().add("positive");
             else if (pos.realPnl() < 0)
-                unrealPNLCell.getStyleClass().add("negative");
+                realPNLCell.getStyleClass().add("negative");
             rowsList.add(realPNLCell);
             rowsList.add(createCell(counter.intValue(), PEROFPORT.getIndex(), 0.0, false, "##.#############" + "%"));
             rowsList.add(createCell(counter.intValue(), MARGIN.getIndex(), getValue(account, pos.conid(), MARGIN.getIndex(), 0.0), true, "manualy",
@@ -259,7 +256,7 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
             rowsList2.add(createCell(counter.intValue(), KCCREDITREC.getIndex(), entry$, false, dollarFormat));
             rowsList2.add(createCell(counter.intValue(), KCTAKEPROFITPER.getIndex(), getValue(account, pos.conid(), KCTAKEPROFITPER.getIndex(), 0.42), true, "manualy",
                     /*new KCTakeProfitPerEvent(spreadsheetModelObservableList, spreadsheetModelObservableList2, spreadsheetModelObservableList3)*/null, percentFormat));
-            rowsList2.add(createCell(counter.intValue(), KCTAKEPROFITDOL.getIndex(), 0.0, false, dollarFormat, /*new KCTakeProfitDolEvent(spreadsheetModelObservableList)*/null));
+            rowsList2.add(createCell(counter.intValue(), KCTAKEPROFITDOL.getIndex(), 0.0, false, dollarFormat));
             rowsList2.add(createCell(counter.intValue(), KCNETPROFITDOL.getIndex(), 0.0, false, dollarFormat));
             rowsList2.add(createCell(counter.intValue(), KCLOSSLEVEL.getIndex(), 0.0, false, percentFormat));
             rowsList2.add(createCell(counter.intValue(), KCTAKELOSSDOL.getIndex(), 0.0, false, dollarFormat));
