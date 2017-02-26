@@ -1,5 +1,6 @@
 package ca.riveros.ib.events;
 
+import ca.riveros.ib.Mediator;
 import ca.riveros.ib.data.PersistentFields;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -8,6 +9,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 
+import static ca.riveros.ib.Common.calcPerOfPort;
 import static ca.riveros.ib.Common.updateCellValue;
 import static ca.riveros.ib.TableColumnIndexes.*;
 
@@ -19,14 +21,11 @@ public class MarginActionEvent implements ChangeListener<Object> {
 
     private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList;
     private ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList3;
-    private Double accountNetLiq;
 
     public MarginActionEvent(ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList,
-                             ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList3,
-                             Double accountNetLiq) {
+                             ObservableList<ObservableList<SpreadsheetCell>> spreadsheetDataList3) {
         this.spreadsheetDataList = spreadsheetDataList;
         this.spreadsheetDataList3 = spreadsheetDataList3;
-        this.accountNetLiq = accountNetLiq;
     }
 
     @Override
@@ -34,10 +33,15 @@ public class MarginActionEvent implements ChangeListener<Object> {
         ObjectProperty base = (ObjectProperty) observable;
         SpreadsheetCell c = (SpreadsheetCell) base.getBean();
         int row = c.getRow();
-        SpreadsheetCell perOfPortCell = spreadsheetDataList.get(row).get(PEROFPORT.getIndex());
         String account = spreadsheetDataList3.get(row).get(ACCOUNT.getIndex()).getText();
         String contractId = spreadsheetDataList3.get(row).get(CONTRACTID.getIndex()).getText();
-        Platform.runLater(() -> updateCellValue(perOfPortCell, ((Double) newValue) / accountNetLiq));
+        Platform.runLater(() -> {
+
+            //Update UnrealPL and do a row.set to trigger the row to be all recalculated
+            SpreadsheetCell perOfPortCell = spreadsheetDataList.get(row).get(PEROFPORT.getIndex());
+            updateCellValue(perOfPortCell, calcPerOfPort((Double) newValue, Mediator.INSTANCE.getAccountNetLiq()));
+            spreadsheetDataList.get(row).set(PEROFPORT.getIndex(), perOfPortCell);
+        });
         PersistentFields.setValue(account, Integer.valueOf(contractId), MARGIN.getIndex(), (Double) newValue);
     }
 

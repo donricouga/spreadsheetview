@@ -243,7 +243,7 @@ public class AccountInfoHandler implements ApiController.IAccountHandler {
             rowsList.add(realPNLCell);
             rowsList.add(createCell(counter.intValue(), PEROFPORT.getIndex(), 0.0, false, "##.#############" + "%"));
             rowsList.add(createCell(counter.intValue(), MARGIN.getIndex(), getValue(account, pos.conid(), MARGIN.getIndex(), 0.0), true, "manualy",
-                    /*new MarginActionEvent(spreadsheetModelObservableList, spreadsheetModelObservableList3, Double.valueOf(accountNetLiqTextField.getText()))*/null, percentFormat));
+                    new MarginActionEvent(spreadsheetModelObservableList, spreadsheetModelObservableList3), percentFormat));
             rowsList.add(createCell(counter.intValue(), PROFITPER.getIndex(), getValue(account, pos.conid(), PROFITPER.getIndex(), 0.57), true, "manualy",
                     /*new ProfitPercentageEvent(spreadsheetModelObservableList)*/null, percentFormat));
             rowsList.add(createCell(counter.intValue(), LOSSPER.getIndex(), getValue(account, pos.conid(), LOSSPER.getIndex(), 2.0), true, "manualy",

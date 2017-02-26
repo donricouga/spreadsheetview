@@ -100,7 +100,7 @@ public class RowChangeListener implements ListChangeListener<SpreadsheetCell> {
         //Update table. Do need to do % of Port since the account summary handler does that already.
         Platform.runLater(() -> {
             updateCellValue(row.get(MID.getIndex()), mid);
-            updateCellValue(row.get(PERPL.getIndex()), perPL);
+            updateCellValue(row3.get(PERPL.getIndex()), perPL);
             updateCellValue(row2.get(KCTAKEPROFITDOL.getIndex()), kcTakeProfit$);
             updateCellValue(row2.get(KCNETPROFITDOL.getIndex()), kcNetProfit$);
             updateCellValue(row2.get(KCLOSSLEVEL.getIndex()), kcLossLevel);
