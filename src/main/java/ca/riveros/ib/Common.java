@@ -1,12 +1,15 @@
 package ca.riveros.ib;
 
+import ca.riveros.ib.events.RowChangeListener;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Duration;
+import org.controlsfx.control.spreadsheet.Grid;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
@@ -32,10 +35,15 @@ public class Common {
 
     public static Predicate<List<?>> hasElements = (list) -> list != null && list.size() > 0;
 
-    public static void updateCellValue(SpreadsheetCell cell, Double value) {
+    public static void updateCellValue(SpreadsheetCell cell, Object value) {
         cell.setEditable(true);
         cell.setItem(value);
         cell.setEditable(false);
+    }
+
+    //Calculate Mid
+    public static Double calcMid(Double bid, Double ask) {
+        return (bid + ask) / 2;
     }
 
     //% of Port
@@ -106,6 +114,14 @@ public class Common {
         return perTraded * netLiq;
     }
 
+    public static Double calcPerPL(Double entry$, Double mid) {
+        if(entry$ == 0) return 0.0;
+        if(entry$ < 0)
+            return (entry$ - mid) / entry$;
+        else
+            return (mid - entry$) / entry$;
+    }
+
 
     ////// UI
 
@@ -131,7 +147,8 @@ public class Common {
     public static SpreadsheetCell createCell(int row, int col, Double value, Boolean editable, String cssClass, ChangeListener cl) {
         SpreadsheetCell cell = createCell(row,col,value,editable);
         cell.getStyleClass().add(cssClass);
-        cell.itemProperty().addListener(cl);
+        if(cl != null)
+            cell.itemProperty().addListener(cl);
         return cell;
     }
 

@@ -30,7 +30,7 @@ public class Mediator extends Application {
     private AccountInfoHandler accountInfoHandler;
     private String selectedAccount;
 
-    private Boolean addedAccountNetLiqHandler = false;
+    private Boolean accountDataLoaded = false;
 
     public Mediator() {
         mainWindow = new TwsIbSpreadSheetView(this);
@@ -71,18 +71,15 @@ public class Mediator extends Application {
         this.selectedAccount = account;
 
         //Only one instance of a handler should exist.
-        if(accountInfoHandler == null)
+        if(accountInfoHandler == null) {
             accountInfoHandler = new AccountInfoHandler(this, account, inLogger);
+            accountDataLoaded = true;
+        }
+        else {
+            accountInfoHandler.reset(account);
+        }
 
         connectionHandler.getApiController().reqAccountUpdates(true, account, accountInfoHandler);
-    }
-
-    /**
-     * Lets the Account Update Handler add the results of the reqAccountUpdates() API to the SpreadsheetView Grid
-     * @param list
-     */
-    public void updateSpreadsheetViewGrid(List<SpreadsheetModel> list ) {
-        mainWindow.updateSpreadsheetViewGrid(list);
     }
 
     public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells() {
@@ -95,6 +92,10 @@ public class Mediator extends Application {
 
     public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells3() {
         return mainWindow.spreadsheetView3.getGrid().getRows();
+    }
+
+    public ObservableList<ObservableList<SpreadsheetCell>> getSpreadSheetCells4() {
+        return mainWindow.spreadsheetView4.getGrid().getRows();
     }
 
     public SpreadsheetView getBlockTradingSpreadSheetView(){
@@ -123,16 +124,16 @@ public class Mediator extends Application {
      * Update the total net Liq for all accounts
      * @return
      */
-    public void updateTotalNetLiq(String value) {
-        mainWindow.totalNetLiqTextField.setText(value);
+    public void updateTotalNetLiq(Double value) {
+        mainWindow.totalNetLiqTextField.setText(value.toString());
     }
 
     /**
      * Update the total Init Margin for all accounts
      * @return
      */
-    public void updateTotalInitMargin(String value) {
-        mainWindow.totalInitMarginTextField.setText(value);
+    public void updateTotalInitMargin(Double value) {
+        mainWindow.totalInitMarginTextField.setText(value.toString());
     }
 
     /**
@@ -145,6 +146,10 @@ public class Mediator extends Application {
         } catch(NumberFormatException nfe) {
             return 0.0;
         }
+    }
+
+    public Boolean isAccountDataLoaded() {
+        return accountDataLoaded;
     }
 
     public ConnectionHandler getConnectionHandler() {
