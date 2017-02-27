@@ -21,18 +21,8 @@ import org.controlsfx.control.spreadsheet.*;
 
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static ca.riveros.ib.Common.createCell;
-import static ca.riveros.ib.Common.decimalFormat;
-import static ca.riveros.ib.Common.dollarFormat;
-import static ca.riveros.ib.Common.noDecimals;
-import static ca.riveros.ib.Common.percentFormat;
-import static ca.riveros.ib.Common.twoDecimalFormat;
-import static ca.riveros.ib.Common.twoPercentFormat;
-import static ca.riveros.ib.events.EventTypes.twsEndStreamEventType;
 import static ca.riveros.ib.TableColumnIndexes.*;
-import static ca.riveros.ib.data.PersistentFields.getValue;
 
 /**
  * Build the UI and launch the Application
@@ -149,7 +139,6 @@ public class TwsIbSpreadSheetView extends Application {
 
     private SpreadsheetView createSpreadsheetViews(List<String> columnData) {
         GridBase grid = new GridBase(1, columnData.size());
-        //grid.setRowHeightCallback(new GridBase.MapBasedRowHeightFactory(generateRowHeight()));
         ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
         for (int row = 0; row < grid.getRowCount(); ++row) {
             final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
@@ -180,12 +169,6 @@ public class TwsIbSpreadSheetView extends Application {
 
         return spv;
     }
-
-    /*private Map<Integer, Double> generateRowHeight() {
-        Map<Integer, Double> rowHeight = new HashMap<>();
-        rowHeight.put(1, 100.0);
-        return rowHeight;
-    }*/
 
     private TabPane createTabs() {
         TabPane tabPane = new TabPane();
@@ -276,12 +259,12 @@ public class TwsIbSpreadSheetView extends Application {
     }
 
     private void hideUnecessaryColumns() {
-        /*spreadsheetView3.getColumns().get(BID.getIndex()).setMaxWidth(0);
+        spreadsheetView3.getColumns().get(BID.getIndex()).setMaxWidth(0);
         spreadsheetView3.getColumns().get(BID.getIndex()).setPrefWidth(0);
         spreadsheetView3.getColumns().get(BID.getIndex()).setMinWidth(0);
         spreadsheetView3.getColumns().get(ASK.getIndex()).setMaxWidth(0);
         spreadsheetView3.getColumns().get(ASK.getIndex()).setPrefWidth(0);
-        spreadsheetView3.getColumns().get(ASK.getIndex()).setMinWidth(0);*/
+        spreadsheetView3.getColumns().get(ASK.getIndex()).setMinWidth(0);
         spreadsheetView3.getColumns().get(CONTRACTID.getIndex()).setMaxWidth(0);
         spreadsheetView3.getColumns().get(CONTRACTID.getIndex()).setPrefWidth(0);
         spreadsheetView3.getColumns().get(CONTRACTID.getIndex()).setMinWidth(0);

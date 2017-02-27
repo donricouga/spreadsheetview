@@ -22,6 +22,7 @@ import static ca.riveros.ib.Common.calcKcNetLoss$;
 import static ca.riveros.ib.Common.calcKcNetProfit$;
 import static ca.riveros.ib.Common.calcKcTakeLoss$;
 import static ca.riveros.ib.Common.calcMid;
+import static ca.riveros.ib.Common.calcPerOfPort;
 import static ca.riveros.ib.Common.calcPerPL;
 import static ca.riveros.ib.Common.calcQtyOpenClose;
 import static ca.riveros.ib.Common.updateCellValue;
@@ -43,7 +44,9 @@ import static ca.riveros.ib.TableColumnIndexes.KCTAKELOSSDOL;
 import static ca.riveros.ib.TableColumnIndexes.KCTAKEPROFITDOL;
 import static ca.riveros.ib.TableColumnIndexes.KCTAKEPROFITPER;
 import static ca.riveros.ib.TableColumnIndexes.LOSSPER;
+import static ca.riveros.ib.TableColumnIndexes.MARGIN;
 import static ca.riveros.ib.TableColumnIndexes.MID;
+import static ca.riveros.ib.TableColumnIndexes.PEROFPORT;
 import static ca.riveros.ib.TableColumnIndexes.PERPL;
 import static ca.riveros.ib.TableColumnIndexes.PROFITPER;
 import static ca.riveros.ib.TableColumnIndexes.QTY;
@@ -78,6 +81,7 @@ public class RowChangeListener implements ListChangeListener<SpreadsheetCell> {
         Double kcCreditReceived = (Double) row2.get(KCCREDITREC.getIndex()).getItem();
 
         //Get Manual Fields
+        Double margin = (Double) row.get(MARGIN.getIndex()).getItem();
         Double kcProbProfit = (Double) row2.get(KCPROBPROFIT.getIndex()).getItem();
         Double kcEdge = (Double) row2.get(KCEDGE.getIndex()).getItem();
         Double kcTakeProfitPer = (Double) row2.get(KCTAKEPROFITPER.getIndex()).getItem();
@@ -87,12 +91,14 @@ public class RowChangeListener implements ListChangeListener<SpreadsheetCell> {
         Double perCapitalTrade = Mediator.INSTANCE.getPercentCapitalToTradeByAccountNumber(account);
 
         //Calculate Data
+        Double netLiq = Mediator.INSTANCE.getAccountNetLiq();
+        Double perOfPort = calcPerOfPort(margin, netLiq);
         Double kcTakeProfit$ = calcKCTakeProfit$(entry$, kcTakeProfitPer);
         Double kcNetProfit$ = calcKcNetProfit$(entry$, kcTakeProfit$);
         Double kcLossLevel = calcKcLossLevel(kcTakeProfitPer, kcProbProfit, kcEdge);
         Double kcTakeLoss$ = calcKcTakeLoss$(entry$, kcLossLevel);
         Double kcNetLoss$ = calcKcNetLoss$(entry$, kcTakeLoss$);
-        Double kcMaxLoss = calcKcMaxLoss(Mediator.INSTANCE.getAccountNetLiq().doubleValue(), perCapitalTrade, kcPerPort);
+        Double kcMaxLoss = calcKcMaxLoss(netLiq, perCapitalTrade, kcPerPort);
         Double kcContractNum = calcKcContractNum(kcMaxLoss, kcNetLoss$);
         Double qtyOpenClose = calcQtyOpenClose(kcContractNum, qty);
         Double kcTakeLossAt = calcKcCalculateTakeLossAt(kcCreditReceived, kcProbProfit, kcTakeLoss$);
@@ -101,6 +107,7 @@ public class RowChangeListener implements ListChangeListener<SpreadsheetCell> {
         Platform.runLater(() -> {
             updateCellValue(row.get(MID.getIndex()), mid);
             updateCellValue(row3.get(PERPL.getIndex()), perPL);
+            updateCellValue(row.get(PEROFPORT.getIndex()), perOfPort);
             updateCellValue(row2.get(KCTAKEPROFITDOL.getIndex()), kcTakeProfit$);
             updateCellValue(row2.get(KCNETPROFITDOL.getIndex()), kcNetProfit$);
             updateCellValue(row2.get(KCLOSSLEVEL.getIndex()), kcLossLevel);

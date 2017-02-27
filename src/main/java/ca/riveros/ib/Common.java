@@ -35,7 +35,7 @@ public class Common {
 
     public static Predicate<List<?>> hasElements = (list) -> list != null && list.size() > 0;
 
-    public static void updateCellValue(SpreadsheetCell cell, Double value) {
+    public static void updateCellValue(SpreadsheetCell cell, Object value) {
         cell.setEditable(true);
         cell.setItem(value);
         cell.setEditable(false);

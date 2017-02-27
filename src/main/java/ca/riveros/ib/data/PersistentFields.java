@@ -10,6 +10,11 @@ public final class PersistentFields {
     private static OutputStream out;
     private static File file;
 
+    public static final String A_TABLE = "A";
+    public static final String K_TABLE = "K";
+    public static final String O_TABLE = "O";
+    public static final String BLOCK_TRADE_TABLE = "BT";
+
     static {
         try {
             String home = System.getProperty("user.home");
@@ -19,26 +24,14 @@ public final class PersistentFields {
             properties.load(in);
             in.close();
             System.out.println("Loaded keyvalue.properties");
-        } catch (FileNotFoundException fnfe) {
-            System.out.println(fnfe);
-            System.exit(-1);
         } catch(IOException ioe) {
             System.out.println(ioe);
             System.exit(-1);
         }
     }
 
-    public static Double getValue(String account, int contractId, int col) {
-        String key = account + "." + contractId + "." + col;
-        Object o = properties.get(key);
-        if(o == null)
-            return null;
-        else
-            return Double.valueOf((String) o);
-    }
-
-    public static Double getValue(String account, int contractId, int col, double defaultValue) {
-        String key = account + "." + contractId + "." + col;
+    public static Double getValue(String account, int contractId, String table, int col, double defaultValue) {
+        String key = account + "." + contractId + "." + table + "." + col;
         Object o = properties.get(key);
         if(o == null)
             return defaultValue;
@@ -46,8 +39,8 @@ public final class PersistentFields {
             return Double.valueOf((String) o);
     }
 
-    public static void setValue(String account, int contractId, int col, Double value) {
-        properties.setProperty(account + "." + contractId + "." + col, value.toString());
+    public static void setValue(String account, int contractId, String table, int col, Double value) {
+        properties.setProperty(account + "." + contractId + "." + table + "." + col, value.toString());
         writeToFile();
     }
 

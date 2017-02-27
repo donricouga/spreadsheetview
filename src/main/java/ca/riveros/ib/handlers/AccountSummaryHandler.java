@@ -1,15 +1,14 @@
 package ca.riveros.ib.handlers;
 
 import ca.riveros.ib.Mediator;
-import ca.riveros.ib.events.BTMarginEvent;
-import ca.riveros.ib.events.NetLiqEventHandler;
-import ca.riveros.ib.events.PercentSymbolEvent;
-import ca.riveros.ib.events.PercentTradedEvent;
+import ca.riveros.ib.events.ManualUpdateBTActionEvent;
+import ca.riveros.ib.events.RowChangeListenerBT;
 import com.ib.controller.AccountSummaryTag;
 import com.ib.controller.ApiController;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 import org.controlsfx.control.spreadsheet.Grid;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
@@ -18,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ca.riveros.ib.Common.calc$Symbol;
@@ -38,10 +38,11 @@ import static ca.riveros.ib.TableColumnIndexes.NETLIQ;
 import static ca.riveros.ib.TableColumnIndexes.PEROFPORT;
 import static ca.riveros.ib.TableColumnIndexes.PERSYMBOL;
 import static ca.riveros.ib.TableColumnIndexes.PERTRADED;
-import static ca.riveros.ib.events.EventTypes.netLiqEventType;
 import static ca.riveros.ib.data.PersistentFields.getMargin;
 import static ca.riveros.ib.data.PersistentFields.getPercentSymbol;
 import static ca.riveros.ib.data.PersistentFields.getPercentTraded;
+import static ca.riveros.ib.events.ManualUpdateBTActionEvent.PERCENT_SYMBOL;
+import static ca.riveros.ib.events.ManualUpdateBTActionEvent.PERCENT_TRADED;
 
 /**
  * Created by admin on 11/17/16.
@@ -53,6 +54,8 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
 
     private Map<String, Double> initMarginReqMap = new HashMap<>(15);
     private Map<String, Double> netLiqMap = new HashMap<>(15);
+
+    private Boolean initialSheetCreated = false;
 
 
     public AccountSummaryHandler(Mediator mediator, Logger inLogger) {
@@ -71,7 +74,9 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
         if ("NetLiquidation".equals(tag.name())) {
             inLogger.log("NET LIQ " + value + " FOR ACCOUNT " + account);
             netLiqMap.put(account, Double.valueOf(value));
-                updateTotalNetLiq();
+            updateTotalNetLiq();
+            if(initialSheetCreated)
+                updateBTSpreadsheet(account, Double.valueOf(value));
         }
 
     }
@@ -89,6 +94,24 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
             totalInitMargin += iterator.next();
         }
         mediator.updateTotalInitMargin(totalInitMargin);
+    }
+
+    private void updateBTSpreadsheet(String account, Double netLiq) {
+        ObservableList<ObservableList<SpreadsheetCell>> btRows = mediator.getSpreadSheetCells4();
+        Optional<ObservableList<SpreadsheetCell>> rowListOpt = btRows.stream().filter(row -> row.get(ACCOUNTNUM.getIndex()).getItem().equals(account)).findFirst();
+        if(rowListOpt.isPresent()) {
+            ObservableList<SpreadsheetCell> rowList = rowListOpt.get();
+            SpreadsheetCell netLiqCell = rowList.get(NETLIQ.getIndex());
+            Platform.runLater(() -> updateCellValue(netLiqCell, netLiq));
+            rowList.set(NETLIQ.getIndex(), netLiqCell);
+
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning Dialog");
+            alert.setHeaderText("Could not update Block Trading Table.");
+            alert.setContentText("Could not update Block Trading Table with new Account Net Liquidation data.");
+            alert.showAndWait();
+        }
     }
 
     private void updateTotalNetLiq() {
@@ -125,30 +148,30 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
             if(k.startsWith("DF"))
                 k = k.concat("A");
             rowsList.add(createCell(counter.intValue(), ACCOUNTNUM.getIndex(), k, false));
-
-            SpreadsheetCell netLiqCell = createCell(counter.intValue(), NETLIQ.getIndex(), netLiq, false, dollarFormat);
-            netLiqCell.addEventHandler(netLiqEventType, new NetLiqEventHandler());
-            rowsList.add(netLiqCell);
+            rowsList.add(createCell(counter.intValue(), NETLIQ.getIndex(), netLiq, false, dollarFormat));
             Double percentTraded = getPercentTraded(k, 0.27);
 
-            rowsList.add(createCell(counter.intValue(), PERTRADED.getIndex(), getPercentTraded(k, 0.27), true,
-                    "manualy", new PercentTradedEvent(spreadsheetModelObservableList, mediator.getSpreadSheetCells2()), twoPercentFormat));
+            rowsList.add(createCell(counter.intValue(), PERTRADED.getIndex(), percentTraded, true,
+                    "manualy", new ManualUpdateBTActionEvent(PERCENT_TRADED), twoPercentFormat));
             Double dollarTraded = calc$Traded(netLiq, percentTraded);
 
             rowsList.add(createCell(counter.intValue(), DOLTRADED.getIndex(), dollarTraded, false, dollarFormat));
             Double percentSymbol = getPercentSymbol(k, 0.012);
 
             rowsList.add(createCell(counter.intValue(), PERSYMBOL.getIndex(), percentSymbol, true,
-                    "manualy", new PercentSymbolEvent(spreadsheetModelObservableList), twoPercentFormat));
+                    "manualy", new ManualUpdateBTActionEvent(PERCENT_SYMBOL), twoPercentFormat));
             Double dollarSymbol = calc$Symbol(dollarTraded, percentSymbol);
 
             rowsList.add(createCell(counter.intValue(), DOLSYMBOL.getIndex(), dollarSymbol, false, dollarFormat));
             Double margin = getMargin(k, 1600.00);
 
             rowsList.add(createCell(counter.intValue(), BTMARGIN.getIndex(), margin, true,
-                    "manualy", new BTMarginEvent(spreadsheetModelObservableList)));
+                    "manualy", new ManualUpdateBTActionEvent(ManualUpdateBTActionEvent.MARGIN)));
 
             rowsList.add(createCell(counter.intValue(), BTCONTRACT.getIndex(), calcContract(dollarSymbol, margin), false));
+
+            //Add Listener
+            rowsList.addListener(new RowChangeListenerBT());
 
             spreadsheetModelObservableList.add(rowsList);
             counter.incrementAndGet();
@@ -156,6 +179,8 @@ public class AccountSummaryHandler implements ApiController.IAccountSummaryHandl
 
         g.setRows(spreadsheetModelObservableList);
         mediator.getBlockTradingSpreadSheetView().setGrid(g);
+
+        initialSheetCreated = true;
     }
 
 
